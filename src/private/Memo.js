@@ -1,6 +1,7 @@
 const _Memo = {
-    MAX_MEMO_SIZE: char_limit,
+    MAX_MEMO_SIZE: typeof char_limit === 'number' ? char_limit : 6e4,
     MSG_DURATION: 1400,
+    createdMemoIds: [],
 
     create: function (schedule) {
         const contents = this.splitSchedule(schedule);
@@ -11,12 +12,18 @@ const _Memo = {
         }
         UI.SuccessMessage('Tworzę rozpiskę, może to zająć kilka sekund.', this.MSG_DURATION);
 
-        for (let i = 0, p = $.Deferred().resolve(); i < contents.length; i++) {
+        let p = $.Deferred().resolve();
+        for (let i = 0; i < contents.length; i++) {
             p = p
                 .then(() => this.addTab())
                 .then(() => this.renameTab(`Rozpiska [${i + 1}]`))
                 .then(() => this.setContent(contents[i]));
         }
+        p.then(() => {
+            Memo.selectTab(this.createdMemoIds[0]);
+            UI.SuccessMessage('Rozpiska została utworzona. Odświeżam stronę.', this.MSG_DURATION);
+            setTimeout(() => location.reload(), this.MSG_DURATION + 600);
+        })
     },
 
     addTab: function () {
@@ -52,7 +59,7 @@ const _Memo = {
                         Memo.selectTab(e.id);
                 }
             },
-        });
+        }).then(res => this.createdMemoIds.push(res.id));
     },
     
     renameTab: function (title) {
@@ -85,11 +92,7 @@ const _Memo = {
 
         return $.ajax(form.action, {method: 'POST', data: requestData})
             .then((res, status) => {
-                if (status === 'success') {
-                    UI.SuccessMessage('Rozpiska została utworzona. Odświeżam stronę.', this.MSG_DURATION);
-                    setTimeout(() => location.reload(), this.MSG_DURATION + 600);
-                }
-                else {
+                if (status !== 'success') {
                     UI.ErrorMessage('Nie udało się utworzyć rozpiski.', this.MSG_DURATION);
                 }
             });

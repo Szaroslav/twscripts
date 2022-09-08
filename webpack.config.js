@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
     mode: 'production',
+    target: ['web', 'es5'],
     context: path.resolve(__dirname, 'src'),
     entry: {
         ScheduleMerger: './public/ScheduleMerger.js',
@@ -26,5 +27,5 @@ module.exports = {
                 }
             }
         ]
-    },
+    }
 };

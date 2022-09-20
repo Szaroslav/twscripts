@@ -20,8 +20,11 @@
 .cache
 .eslintcache
 package-lock.json
+.prettierignore
 
-**/ScheduleSitter.js
-**/SupportHelper.js
+**/ScheduleSitter*.js
+**/SupportSender*.js
+**/SupportSenderUI*.js
+**/SupportSender
 **/Game.js
 **/farm-assistant.js

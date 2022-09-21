@@ -4,8 +4,8 @@
  * GitHub: https://github.com/Szaroslav
  * 
  * Skrypt łączący kilka rozpisek z plemsy.pl w jedną, sortujący od najwcześniejszych do najpóźniejszych rozkazów,
- * jeśli rozpiska jest zbyt duża skrypt dzieli je na kilka notatek.
- * Dopuszczalne formaty rozpisek: tekst prosty, rozszerzony lub dla zastępcy - skrypt nie obsługuje tabel.
+ * jeśli rozpiska jest zbyt duża, skrypt dzieli je na kilka notatek.
+ * Dopuszczalne formaty rozpisek: tekst prosty, rozszerzony lub dla zastąpcy - skrypt nie obsługuje tabel.
  */
 
 import _Memo from '../private/Memo.js';

@@ -1,4 +1,7 @@
+const path = require('path');
 const { merge } = require('webpack-merge');
+const Terser = require('terser-webpack-plugin');
+
 const config = require('./webpack.config.js');
 
 module.exports = merge(config, {
@@ -6,6 +9,17 @@ module.exports = merge(config, {
     
     output: {
         filename: '[name].min.js'
+    },
+
+    optimization: {
+        minimizer: [new Terser({
+            test: /\.js$/,
+            terserOptions: {
+                format: {
+                    ascii_only: true
+                }
+            }
+        })]
     },
 
     module: {
@@ -19,8 +33,14 @@ module.exports = merge(config, {
                         presets: ['@babel/preset-env'],
                         targets: 'defaults, ie 11'
                     }
-                }
+                } 
             }
         ]
-    }
+    },
+
+    resolveLoader: {
+        alias: {
+            'utf-loader': path.resolve(__dirname, 'src/loaders/utf.loader.js')
+        }
+    },
 });

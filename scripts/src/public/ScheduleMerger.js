@@ -36,12 +36,7 @@ const ScheduleMerger = {
         const memos = document.querySelectorAll('.memo_container');
 
         memos.forEach(memo => {
-            const d = memo.querySelector('textarea[name="memo"]').value
-                .split('\n')
-                .filter(line => line !== '')
-                .filter(line => /^[0-9]{1,}./.test(line) || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line) || /Wyślij \w+\[\/url]$/.test(line))
-                .map(line => line + '\r\n');
-
+            const d = _Memo.getSchedule(memo.querySelector('textarea[name="memo"]').value, 'text');
             for (let i = 0; i < d.length; i += 3) {
                 if (i + 2 >= d.length) return;
                 schedule.push([d[i], d[i + 1], d[i + 2]]);

@@ -26,6 +26,19 @@ const _Memo = {
         })
     },
 
+    getSchedule: function (scheduleText, format) {
+        if (format === 'text') {
+            return scheduleText
+                .split('\n')
+                .filter(line => line !== '')
+                .filter(line => /^[0-9]{1,}./.test(line) || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line) || /Wyślij \w+\[\/url]$/.test(line))
+                .map(line => line + '\r\n');
+        }
+        else if (format === 'table') {
+
+        }
+    },
+
     addTab: function () {
         if (Memo.tabs.length >= 10) {
             UI.ErrorMessage(s(_("3531dec6f954a7d15f46b4cf644c5bfe"), Memo.tabs.length), this.MSG_DURATION);

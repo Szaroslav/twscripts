@@ -6,9 +6,10 @@ module.exports = {
     context: path.resolve(__dirname, 'src'),
 
     entry: {
-        ScheduleMerger: './public/ScheduleMerger.js',
-        ScheduleSitter: './public/ScheduleSitter.js',
-        SupportSender: './public/SupportSender/SupportSender.js'
+        // ScheduleMerger: './public/ScheduleMerger.js',
+        ScheduleRemover: './public/ScheduleRemover.js',
+        // ScheduleSitter: './public/ScheduleSitter.js',
+        // SupportSender: './public/SupportSender/SupportSender.js'
     },
 
     output: {

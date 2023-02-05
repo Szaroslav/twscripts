@@ -1,1 +1,1 @@
-# [PL] Tribal Wars (Plemiona) quick bar scripts
+# Tribal Wars applications and scripts

@@ -5,10 +5,10 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
-    </head>
+    <script defer src="runtime.bundle.js"></script><script defer src="index.bundle.js"></script></head>
     <body>
         <form action="">
-            
+            <?= "Sperma123456" ?>
         </form>
     </body>
 </html>

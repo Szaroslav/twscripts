@@ -1,3 +1,3 @@
-import TribalWars from './tribalwars';
+import TribalWars from './tribalwars'; //
 
-TribalWars.getActiveServers();
+TribalWars.getActiveServers().then(res => console.log(res));

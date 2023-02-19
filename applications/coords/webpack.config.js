@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 module.exports = {
     mode: 'development',
@@ -11,13 +13,31 @@ module.exports = {
     devtool: 'inline-source-map',
 
     devServer: {
-        static: './dist',
+        port: 8000,
+        hot: true,
+        devMiddleware: {
+            writeToDisk: true,
+        },
+        watchFiles: ['src/**/*.php'],
+        proxy: {
+            '/': {
+                target: 'http://127.0.0.1:7888/tw/applications/coords/dist',
+                secure: false,
+            },
+        },
     },
 
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Development',
-            template: 'src/index.html',
+            template: 'src/index.php',
+            filename: 'index.php',
+        }),
+        new CleanWebpackPlugin(),
+        new BrowserSyncPlugin({
+            host: 'localhost',
+            port: 3000,
+            proxy: 'http://localhost:8000',
         }),
     ],
 

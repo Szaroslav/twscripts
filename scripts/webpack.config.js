@@ -9,7 +9,8 @@ module.exports = {
         // ScheduleMerger: './public/ScheduleMerger.js',
         ScheduleRemover: './public/ScheduleRemover.js',
         // ScheduleSitter: './public/ScheduleSitter.js',
-        // SupportSender: './public/SupportSender/SupportSender.js'
+        // SupportSender: './public/SupportSender/SupportSender.js',
+        BarbarianWallDestroyer: './public/BarbarianWallDestroyer.js'
     },
 
     output: {

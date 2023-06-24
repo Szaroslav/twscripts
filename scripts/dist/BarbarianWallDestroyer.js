@@ -1,3 +1,5 @@
+/******/ (function() { // webpackBootstrap
+var __webpack_exports__ = {};
 /**
  * BarbarianWallDestroyer.js v0.8.5
  * Szary (Plemiona: AGH Szary)
@@ -21,8 +23,8 @@ const BarbarianWallDestroyer = {
     // Szablony wojsk na poszczególne poziomy murów
     templates: {
       1:  { "axes": 10, "scouts": 1, "lights": 2, "rams": 2 },
-      2:  { "axes": 10, "scouts": 1, "lights": 4, "rams": 4 },
-      3:  { "axes": 10, "scouts": 1, "lights": 8, "rams": 8 },
+      2:  { "axes": 0, "scouts": 1, "lights": 4, "rams": 4 },
+      3:  { "axes": 0, "scouts": 1, "lights": 10, "rams": 8 },
       4:  { "axes": 15, "scouts": 1, "lights": 15, "rams": 15 },
       5:  { "axes": 15, "scouts": 1, "lights": 20, "rams": 20 },
       6:  { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
@@ -105,3 +107,6 @@ const BarbarianWallDestroyer = {
 }
 
 BarbarianWallDestroyer.exec();
+
+/******/ })()
+;

@@ -25,13 +25,12 @@ module.exports = merge(config, {
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.[jt]sx?$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader',
+                    loader: 'esbuild-loader',
                     options: {
-                        presets: ['@babel/preset-env'],
-                        targets: 'defaults, ie 11'
+                        targets: 'es2015'
                     }
                 } 
             }

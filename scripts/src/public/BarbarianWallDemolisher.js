@@ -1,5 +1,5 @@
 /**
- * BarbarianWallDemolisher.js v0.9
+ * BarbarianWallDemolisher.js v1.0
  * Szary (Plemiona: AGH Szary)
  * GitHub:       https://github.com/Szaroslav
  * Kod źródłowy: https://github.com/Szaroslav/twscripts
@@ -55,7 +55,7 @@ const BarbarianWallDemolisher = {
   /////////////////////////////////////////
   //    Nie edytuj zawartości poniżej    //
   /////////////////////////////////////////
-  version: "v0.9",
+  version: "v1.0",
 
   exec() {
     if (game_data.screen === "am_farm") {
@@ -71,12 +71,18 @@ const BarbarianWallDemolisher = {
     }
   },
 
+  
+
   handlePlunderRow(i, row) {
     if (i < 2) {
       return;
     }
     
     const dotImage = row.cells[1].querySelector("img");
+    // Estaminate level of wall, based on respectively:
+    // - spotted level;
+    // - yellow dot;
+    // - red dot.
     const wallLevel = Number(row.cells[6].innerHTML)
                       || /dots\/yellow\.[a-z]+$/.test(dotImage.src) && this.settings.yellowDotWallLevel
                       || /dots\/red\.[a-z]+$/.test(dotImage.src) && this.settings.redDotWallLevel
@@ -106,11 +112,23 @@ const BarbarianWallDemolisher = {
 
   handleCommandClick(parameters, row, event) {
     if (!event.ctrlKey && !event.shiftKey) {
+      // Disable redirection and render the command popup
       event.preventDefault();
       CommandPopup.openRallyPoint(parameters);
     }
     if (this.settings.hideOnClick) {
-      row.style.display = "none";
+      // Hide the row right after clicking the attack confirmation button.
+      // Observe the DOM, whenever it's change
+      // to find the button and add onclick event handler function.
+      const mutationObserver = new MutationObserver((_, observer) => {
+        const confirmAttackButton = $("#troop_confirm_submit")[0];
+        console.log(confirmAttackButton);
+        if (confirmAttackButton) {
+          confirmAttackButton.onclick = () => row.style.display = "none";
+          observer.disconnect();
+        }
+      });
+      mutationObserver.observe(document, { childList: true, subtree: true });
     }
   }
 }

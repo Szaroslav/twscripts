@@ -1,24 +1,33 @@
 /**
- * BarbarianWallDestroyer.js v0.8.5
+ * BarbarianWallDestroyer.js v0.9
  * Szary (Plemiona: AGH Szary)
- * GitHub:      https://github.com/Szaroslav
- * Source code: https://github.com/Szaroslav/twscripts
+ * GitHub:       https://github.com/Szaroslav
+ * Kod źródłowy: https://github.com/Szaroslav/twscripts
  * 
  * Zmodyfikowany i rozbudowany skrypt napisany przez howcio.
+ * Umożliwia wysyłanie ataków burzących, za pomocą przycisku placu w panelu Asystenta Farmera.
+ * Skrypt analizuje ostatnie raporty znajdujące się w Asystencie Farmera pod kątem 3 aspektów:
+ * - poziom muru wykryty przez zwiadowców;
+ * - częściowe straty (żółta kropka);
+ * - pełne straty (czerwona kropka).
  */
 
 const BarbarianWallDestroyer = {
-  version: "v0.8.5",
+  // Modifikowalne ustawienia skryptu
   settings: {
     // Ukrywanie wiosek bez murków do zbicia [true/false]
-    hideOthers: true,
+    hideOthers:         true,
     // Ukrywanie wiosek po kliknięciu w link do placu [true/false]
-    hideOnClick: true,
+    hideOnClick:        true,
     // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
     yellowDotWallLevel: 0,
     // Zakładany poziom muru, jeśli atak poniósł całkowite straty (czerwona kropka)
-    redDotWallLevel: 1, 
+    redDotWallLevel:    1, 
     // Szablony wojsk na poszczególne poziomy murów
+    // axes   - topornicy
+    // scouts - zwiadowcy
+    // lights - lekka
+    // rams   - tarany
     templates: {
       1:  { "axes": 10, "scouts": 1, "lights": 2, "rams": 2 },
       2:  { "axes": 10, "scouts": 1, "lights": 4, "rams": 4 },
@@ -43,9 +52,11 @@ const BarbarianWallDestroyer = {
     }
   },
 
-  /////////////////////////////
-  //    Do not edit below    //
-  /////////////////////////////
+  /////////////////////////////////////////
+  //    Nie edytuj zawartości poniżej    //
+  /////////////////////////////////////////
+  version: "v0.9",
+
   exec() {
     if (game_data.screen === "am_farm") {
       const plunderList = $("#plunder_list")[0].rows;

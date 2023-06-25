@@ -1,5 +1,5 @@
 /**
- * BarbarianWallDestroyer.js v0.9
+ * BarbarianWallDemolisher.js v0.9
  * Szary (Plemiona: AGH Szary)
  * GitHub:       https://github.com/Szaroslav
  * Kod źródłowy: https://github.com/Szaroslav/twscripts
@@ -12,7 +12,7 @@
  * - pełne straty (czerwona kropka).
  */
 
-const BarbarianWallDestroyer = {
+const BarbarianWallDemolisher = {
   // Modifikowalne ustawienia skryptu
   settings: {
     // Ukrywanie wiosek bez murków do zbicia [true/false]
@@ -115,4 +115,4 @@ const BarbarianWallDestroyer = {
   }
 }
 
-BarbarianWallDestroyer.exec();
+BarbarianWallDemolisher.exec();

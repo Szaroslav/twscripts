@@ -20,7 +20,7 @@ const BarbarianWallDemolisher = {
     // Ukrywanie wiosek po kliknięciu w link do placu [true/false]
     hideOnClick:        true,
     // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
-    yellowDotWallLevel: 0,
+    yellowDotWallLevel: 1,
     // Zakładany poziom muru, jeśli atak poniósł całkowite straty (czerwona kropka)
     redDotWallLevel:    1, 
     // Szablony wojsk na poszczególne poziomy murów
@@ -71,8 +71,6 @@ const BarbarianWallDemolisher = {
     }
   },
 
-  
-
   handlePlunderRow(i, row) {
     if (i < 2) {
       return;
@@ -83,10 +81,17 @@ const BarbarianWallDemolisher = {
     // - spotted level;
     // - yellow dot;
     // - red dot.
-    const wallLevel = Number(row.cells[6].innerHTML)
-                      || /dots\/yellow\.[a-z]+$/.test(dotImage.src) && this.settings.yellowDotWallLevel
-                      || /dots\/red\.[a-z]+$/.test(dotImage.src) && this.settings.redDotWallLevel
-                      || 0;
+    let wallLevel = 0;
+    const rowWallLevel = Number(row.cells[6].innerHTML);
+    if (rowWallLevel)
+      wallLevel = Math.max(wallLevel, rowWallLevel);
+    const isYellow = /dots\/yellow\.[a-z]+$/.test(dotImage.src);
+    if (wallLevel === 0 && isYellow)
+      wallLevel = this.settings.yellowDotWallLevel;
+    const isRed = /dots\/red\.[a-z]+$/.test(dotImage.src);
+    if (wallLevel === 0 && isRed)
+      wallLevel = this.settings.redDotWallLevel;
+
     if (wallLevel > 0) {
       const templates = this.settings.templates;
       const commandParameters = {

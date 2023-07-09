@@ -10,7 +10,7 @@ module.exports = {
         ScheduleRemover: './public/ScheduleRemover.js',
         // ScheduleSitter: './public/ScheduleSitter.js',
         // SupportSender: './public/SupportSender/SupportSender.js',
-        BarbarianWallDestroyer: './public/BarbarianWallDestroyer.js'
+        BarbarianWallDemolisher: './public/BarbarianWallDemolisher.js'
     },
 
     output: {

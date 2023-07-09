@@ -1,63 +1,69 @@
 /**
  * BarbarianWallDemolisher.js v1.0
- * Szary (Plemiona: AGH Szary) i howcio
- * GitHub:       https://github.com/Szaroslav
- * Kod źródłowy: https://github.com/Szaroslav/twscripts
+ * Szary (Plemiona: AGH Szary) and howcio
+ * GitHub:      https://github.com/Szaroslav
+ * Source code: https://github.com/Szaroslav/twscripts/tree/master/scripts/build/BarbarianWallDemolisher.js
  * 
- * Zmodyfikowany i rozbudowany skrypt napisany przez howcio.
- * Umożliwia wysyłanie ataków burzących, za pomocą przycisku placu w panelu Asystenta Farmera.
- * Skrypt analizuje ostatnie raporty znajdujące się w Asystencie Farmera pod kątem 3 aspektów:
- * - poziom muru wykryty przez zwiadowców;
- * - częściowe straty (żółta kropka);
- * - pełne straty (czerwona kropka).
+ * Modified and extended script written by howcio.
+ * Allows sending the demolishing attack commands
+ * via rally point button in the Loot Assistant panel.
+ * Script bases on the recent reports located in the Loot Assistant panel,
+ * it evaluates or estimates level of the wall relying on 3 conditions:
+ * - level of the wall spotted by scouts;
+ * - partial losses (yellow dot);
+ * - full losses (red dot).
  */
 
+(function() {
 const BarbarianWallDemolisher = {
-  // Modifikowalne ustawienia skryptu
-  settings: {
-    // Ukrywanie wiosek bez murków do zbicia [true/false]
+  // Base of the user customisable settings
+  baseSettings: {
+    // Hide all villages without built wall [true/false]
     hideOthers:         true,
-    // Ukrywanie wiosek po wysłaniu ataku [true/false]
+    // Hide a village after sending the command [true/false]
     hideOnClick:        true,
-    // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
+    // Assumed level of the wall, if the attack suffered partial losses (yellow dot)
     yellowDotWallLevel: 1,
-    // Zakładany poziom muru, jeśli atak poniósł całkowite straty (czerwona kropka)
+    // Assumed level of the wall, if the attack suffered full losses (red dot)
     redDotWallLevel:    1, 
-    // Szablony wojsk na poszczególne poziomy murów
-    // axes   - topornicy
-    // scouts - zwiadowcy
-    // lights - lekka
-    // rams   - tarany
+    // Templates of troops per wall level
     templates: {
-      1:  { "axes": 10, "scouts": 1, "lights": 2, "rams": 2 },
-      2:  { "axes": 10, "scouts": 1, "lights": 4, "rams": 4 },
-      3:  { "axes": 10, "scouts": 1, "lights": 8, "rams": 8 },
-      4:  { "axes": 15, "scouts": 1, "lights": 15, "rams": 15 },
-      5:  { "axes": 15, "scouts": 1, "lights": 20, "rams": 20 },
-      6:  { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      7:  { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      8:  { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      9:  { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      10: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      11: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      12: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      13: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      14: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      15: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      16: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      17: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      18: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      19: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 },
-      20: { "axes": 0, "scouts": 0, "lights": 0, "rams": 0 }
+      1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2 },
+      2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4 },
+      3:  { "axes": 10, "scouts": 1, "lights": 8,  "rams": 8 },
+      4:  { "axes": 15, "scouts": 1, "lights": 15, "rams": 10 },
+      5:  { "axes": 25, "scouts": 1, "lights": 20, "rams": 15 },
+      6:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      7:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      8:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      9:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      10: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      11: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      12: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      13: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      14: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      15: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      16: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      17: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      18: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+      20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 }
     }
   },
+  settings: {},
+  //////////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////
-  //    Nie edytuj zawartości poniżej    //
-  /////////////////////////////////////////
   version: "v1.0",
 
   exec() {
+    if (typeof userSettings !== "undefined") {
+      this.initSettings(userSettings);
+    }
+    else {
+      this.initSettings({});
+    }
+    console.log(this.settings);
+
     if (game_data.screen === "am_farm") {
       const plunderList = $("#plunder_list")[0].rows;
       for (let i = 0; i < plunderList.length; i++) {
@@ -67,6 +73,21 @@ const BarbarianWallDemolisher = {
     else {
       if (UI) {
         UI.ErrorMessage("Nie jesteś w panelu Asystenta Farmera", 3000, null, null);
+      }
+    }
+  },
+
+  initSettings(settings) {
+    for (const prop in this.baseSettings) {
+      this.settings[prop] = settings[prop]
+                          ? settings[prop]
+                          : this.baseSettings[prop];
+    }
+
+    const baseTemplates = this.baseSettings.templates;
+    for (const wallLevel in baseTemplates) {
+      if (!this.settings.templates[wallLevel]) {
+        this.settings.templates[wallLevel] = baseTemplates[wallLevel];
       }
     }
   },
@@ -143,3 +164,4 @@ const BarbarianWallDemolisher = {
 }
 
 BarbarianWallDemolisher.exec();
+})();

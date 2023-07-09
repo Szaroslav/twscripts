@@ -62,7 +62,6 @@ const BarbarianWallDemolisher = {
     else {
       this.initSettings({});
     }
-    console.log(this.settings);
 
     if (game_data.screen === "am_farm") {
       const plunderList = $("#plunder_list")[0].rows;

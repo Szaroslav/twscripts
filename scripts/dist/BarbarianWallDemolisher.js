@@ -1,6 +1,6 @@
 /**
  * BarbarianWallDemolisher.js v1.0
- * Szary (Plemiona: AGH Szary) i howcio
+ * Szary (Plemiona: AGH Szary)
  * GitHub:       https://github.com/Szaroslav
  * Kod źródłowy: https://github.com/Szaroslav/twscripts
  * 
@@ -12,12 +12,13 @@
  * - pełne straty (czerwona kropka).
  */
 
+(function() {
 const BarbarianWallDemolisher = {
-  // Modifikowalne ustawienia skryptu
-  settings: {
+  // Base of the user customisable settings
+  baseSettings: {
     // Ukrywanie wiosek bez murków do zbicia [true/false]
     hideOthers:         true,
-    // Ukrywanie wiosek po wysłaniu ataku [true/false]
+    // Ukrywanie wiosek po kliknięciu w link do placu [true/false]
     hideOnClick:        true,
     // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
     yellowDotWallLevel: 1,
@@ -58,6 +59,10 @@ const BarbarianWallDemolisher = {
   version: "v1.0",
 
   exec() {
+    if (userSettings) {
+      this.initSettings(userSettings);
+    }
+
     if (game_data.screen === "am_farm") {
       const plunderList = $("#plunder_list")[0].rows;
       for (let i = 0; i < plunderList.length; i++) {
@@ -69,6 +74,10 @@ const BarbarianWallDemolisher = {
         UI.ErrorMessage("Nie jesteś w panelu Asystenta Farmera", 3000, null, null);
       }
     }
+  },
+
+  initSettings(settings) {
+    this.settings = userSettings;
   },
 
   handlePlunderRow(i, row) {
@@ -127,13 +136,9 @@ const BarbarianWallDemolisher = {
       // to find the button and add onclick event handler function.
       const mutationObserver = new MutationObserver((_, observer) => {
         const confirmAttackButton = $("#troop_confirm_submit")[0];
+        console.log(confirmAttackButton);
         if (confirmAttackButton) {
           confirmAttackButton.onclick = () => row.style.display = "none";
-          observer.disconnect();
-        }
-
-        const popupCommand = $("#popup_box_popup_command")[0]; 
-        if (!popupCommand) {
           observer.disconnect();
         }
       });
@@ -141,5 +146,6 @@ const BarbarianWallDemolisher = {
     }
   }
 }
+})();
 
 BarbarianWallDemolisher.exec();

@@ -16,7 +16,7 @@ function generateComment(data) {
             const filePath = path.resolve(__dirname, 'src/public', `${data.chunk.name}${extension}`);
             const fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
             if (commentRegExp.test(fileContent)) {
-                scriptComment = fileContent.match(commentRegExp)[0];
+                scriptComment = fileContent.match(commentRegExp)[0] + "\n";
             }
         }
         catch {
@@ -35,18 +35,19 @@ module.exports = merge(config, {
     mode: 'production',
     
     output: {
-        filename: '[name].min.js',
+        filename: '[name].js',
         clean: true
     },
 
     optimization: {
-        minimize: false,
+        minimize: true,
         minimizer: [new Terser({
             test: /\.js$/,
             extractComments: false,
             terserOptions: {
+                compress: false,
                 format: {
-                    comments: true,
+                    comments: false,
                     ascii_only: true
                 }
             }

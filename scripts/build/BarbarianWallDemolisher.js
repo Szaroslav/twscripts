@@ -148,8 +148,10 @@ const BarbarianWallDemolisher = {
       const mutationObserver = new MutationObserver((_, observer) => {
         const confirmAttackButton = $("#troop_confirm_submit")[0];
         if (confirmAttackButton) {
-          confirmAttackButton.onclick = () => row.style.display = "none";
-          observer.disconnect();
+          confirmAttackButton.onclick = () => {
+            row.style.display = "none";
+            observer.disconnect();
+          };
         }
 
         const popupCommand = $("#popup_box_popup_command")[0]; 

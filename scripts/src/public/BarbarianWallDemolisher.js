@@ -13,44 +13,44 @@
  */
 
 const BarbarianWallDemolisher = {
-  // Modifikowalne ustawienia skryptu
-  settings: {
-    // Ukrywanie wiosek bez murków do zbicia [true/false]
-    hideOthers:         true,
-    // Ukrywanie wiosek po wysłaniu ataku [true/false]
-    hideOnClick:        true,
-    // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
-    yellowDotWallLevel: 1,
-    // Zakładany poziom muru, jeśli atak poniósł całkowite straty (czerwona kropka)
-    redDotWallLevel:    1, 
-    // Szablony wojsk na poszczególne poziomy murów
-    // axes   - topornicy
-    // scouts - zwiadowcy
-    // lights - lekka
-    // rams   - tarany
-    templates: {
-      1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2 },
-      2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4 },
-      3:  { "axes": 10, "scouts": 1, "lights": 8,  "rams": 8 },
-      4:  { "axes": 15, "scouts": 1, "lights": 15, "rams": 10 },
-      5:  { "axes": 25, "scouts": 1, "lights": 20, "rams": 15 },
-      6:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      7:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      8:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      9:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      10: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      11: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      12: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      13: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      14: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      15: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      16: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      17: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      18: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 }
-    }
-  },
+// Modifikowalne ustawienia skryptu
+settings: {
+  // Ukrywanie wiosek bez murków do zbicia [true/false]
+  hideOthers:         true,
+  // Ukrywanie wiosek po wysłaniu ataku [true/false]
+  hideOnClick:        true,
+  // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
+  yellowDotWallLevel: 1,
+  // Zakładany poziom muru, jeśli atak poniósł całkowite straty (czerwona kropka)
+  redDotWallLevel:    1, 
+  // Szablony wojsk na poszczególne poziomy murów
+  // axes   - topornicy
+  // scouts - zwiadowcy
+  // lights - lekka
+  // rams   - tarany
+  templates: {
+    1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2 },
+    2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4 },
+    3:  { "axes": 10, "scouts": 1, "lights": 8,  "rams": 8 },
+    4:  { "axes": 15, "scouts": 1, "lights": 15, "rams": 10 },
+    5:  { "axes": 25, "scouts": 1, "lights": 20, "rams": 15 },
+    6:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    7:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    8:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    9:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    10: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    11: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    12: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    13: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    14: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    15: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    16: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    17: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    18: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
+    20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 }
+  }
+},
 
   /////////////////////////////////////////
   //    Nie edytuj zawartości poniżej    //
@@ -128,8 +128,10 @@ const BarbarianWallDemolisher = {
       const mutationObserver = new MutationObserver((_, observer) => {
         const confirmAttackButton = $("#troop_confirm_submit")[0];
         if (confirmAttackButton) {
-          confirmAttackButton.onclick = () => row.style.display = "none";
-          observer.disconnect();
+          confirmAttackButton.onclick = () => {
+            row.style.display = "none";
+            observer.disconnect();
+          };
         }
 
         const popupCommand = $("#popup_box_popup_command")[0]; 

@@ -121,11 +121,14 @@ settings: {
       event.preventDefault();
       CommandPopup.openRallyPoint(parameters);
     }
+    
     if (this.settings.hideOnClick) {
-      // Hide the row right after clicking the attack confirmation button.
-      // Observe the DOM, whenever it's change
-      // to find the button and add onclick event handler function.
+      // Observe the DOM, whenever it changes
+      // to find the button and add onclick event handler function
+      // or detect user closing the popup.
+
       const mutationObserver = new MutationObserver((_, observer) => {
+        // Hide the row right after clicking the attack confirmation button.
         const confirmAttackButton = $("#troop_confirm_submit")[0];
         if (confirmAttackButton) {
           confirmAttackButton.onclick = () => {
@@ -134,6 +137,7 @@ settings: {
           };
         }
 
+        // Disconnect the observer after closing the popup.
         const popupCommand = $("#popup_box_popup_command")[0]; 
         if (!popupCommand) {
           observer.disconnect();

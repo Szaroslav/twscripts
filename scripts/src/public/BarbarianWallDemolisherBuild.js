@@ -53,7 +53,9 @@ const BarbarianWallDemolisher = {
   settings: {},
   //////////////////////////////////////////////////////////////////////////////
 
-  version: "v1.0",
+  version:   "v1.0",
+  observer:  null,
+  activeRow: null,
 
   exec() {
     if (typeof userSettings !== "undefined") {
@@ -63,7 +65,16 @@ const BarbarianWallDemolisher = {
       this.initSettings({});
     }
 
+    // Verify, if user is in the Loot Assitant panel.
     if (game_data.screen === "am_farm") {
+      if (this.settings.hideOnClick) {
+        // Observe the DOM, whenever it changes.
+        // Find the button and add onclick event handler function
+        // to remove a row after sending the attack.
+        this.observer = new MutationObserver(this.handleDocumentChange.bind(this));
+        this.observer.observe(document, { childList: true, subtree: true }); 
+      }
+
       const plunderList = $("#plunder_list")[0].rows;
       for (let i = 0; i < plunderList.length; i++) {
         this.handlePlunderRow(i, plunderList[i]);
@@ -88,6 +99,21 @@ const BarbarianWallDemolisher = {
       if (!this.settings.templates[wallLevel]) {
         this.settings.templates[wallLevel] = baseTemplates[wallLevel];
       }
+    }
+  },
+
+  handleDocumentChange(mutationNodeList, observer) {
+    // Hide the row right after clicking the attack confirmation button. 
+    let confirmAttackButton = $("#troop_confirm_submit")[0];
+    if (confirmAttackButton) {
+      const row = this.activeRow;
+      confirmAttackButton.onclick = () => row.style.display = "none";
+    }
+
+    // Remove active row after closing the popup.
+    const popupCommand = $("#popup_box_popup_command")[0]; 
+    if (!popupCommand) {
+      this.activeRow = null;
     }
   },
 
@@ -123,9 +149,9 @@ const BarbarianWallDemolisher = {
         att_ram:           templates[wallLevel]["rams"]
       };
 
-      const commandButton = row.cells[11].getElementsByTagName("a")[0];
+      const commandButton   = row.cells[11].getElementsByTagName("a")[0];
       commandButton.removeAttribute("onclick");
-      commandButton.href += $.param(commandParameters);
+      commandButton.href   += $.param(commandParameters);
       commandButton.onclick = this.handleCommandClick.bind(this, commandParameters, row);
     }
     else {
@@ -137,36 +163,16 @@ const BarbarianWallDemolisher = {
 
   handleCommandClick(parameters, row, event) {
     if (!event.ctrlKey && !event.shiftKey) {
-      // Disable redirection and render the command popup
+      // Disable redirection and render the command popup.
       event.preventDefault();
       CommandPopup.openRallyPoint(parameters);
     }
     
     if (this.settings.hideOnClick) {
-      // Observe the DOM, whenever it changes
-      // to find the button and add onclick event handler function
-      // or detect user closing the popup.
-
-      const mutationObserver = new MutationObserver((_, observer) => {
-        // Hide the row right after clicking the attack confirmation button.
-        const confirmAttackButton = $("#troop_confirm_submit")[0];
-        if (confirmAttackButton) {
-          confirmAttackButton.onclick = () => {
-            row.style.display = "none";
-            observer.disconnect();
-          };
-        }
-
-        // Disconnect the observer after closing the popup.
-        const popupCommand = $("#popup_box_popup_command")[0]; 
-        if (!popupCommand) {
-          observer.disconnect();
-        }
-      });
-      mutationObserver.observe(document, { childList: true, subtree: true });
+      this.activeRow = row;
     }
   }
-}
+};
 
 BarbarianWallDemolisher.exec();
 })();

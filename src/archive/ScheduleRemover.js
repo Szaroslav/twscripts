@@ -1,4 +1,4 @@
-import BBCode from '../private/BBCode.js';
+import BBCode from './common/BBCode.js';
 
 const ScheduleRemover = {
     init: function () {

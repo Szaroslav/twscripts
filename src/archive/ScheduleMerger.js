@@ -8,7 +8,7 @@
  * Dopuszczalne formaty rozpisek: tekst prosty, rozszerzony lub dla zastąpcy - skrypt aktualnie nie obsługuje tabel.
  */
 
-import _Memo from '../private/Memo.js';
+import _Memo from './common/Memo.js';
 
 const ScheduleMerger = {
     MSG_DURATION: 1400,

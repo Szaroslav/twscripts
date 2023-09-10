@@ -1,3 +1,4 @@
+javascript:
 (async function() {
 
 const modal = $('#check_villages');
@@ -10,6 +11,7 @@ const cvData = {
   maxAttacksInput: '.max-attacks--input',
   tribeIdsInput: '.tribe-ids--input',
   villagesOutputDiv: '.villages-output--div',
+  removedVillagesDiv: '.removed-villages--div',
   counter: '.counter',
   commandRow: 'tr.command-row',
   dataCommandType: 'command-type'
@@ -50,7 +52,7 @@ const arrayToMap = function (array, key) {
   }
 
   return array.reduce((accumulator, currentValue) => {
-    accumulator[currentValue[key]] = delete currentValue[key] && currentValue
+    accumulator[currentValue[key]] = currentValue
     return accumulator;
   }, {});
 }
@@ -96,53 +98,57 @@ const checkVillages = function(event) {
 
   const villageCoordsUnique = [...new Set(villagesCoords)];
 
-  displayCounter(0, 0);
-
+  
   villageCoordsUnique.forEach((item, _) => {
     const village = getVillageData(item);
     if (null !== village) {
       villages[village.id] = village;
     }
   });
-
+  
   const allVillages = Object.keys(villages).length;
+  // displayCounter(0, allVillages);
 
   // Remove all villages, which tribe ID contains in tribe IDs input.
-  Object.entries(villages)
-    .filter(([_, village]) => tribeIds.includes(village.tribeId))
-    .forEach(([villageId, _]) => delete villages[villageId]);
+  const villagesToRemove = Object.entries(villages)
+    .filter(([ _, village ]) => tribeIds.includes(village.tribeId));
+  villagesToRemove
+    .forEach(([ villageId, _ ]) => delete villages[villageId]);
+  const removedVillages = villagesToRemove.map(([ _, village ]) => village);
 
-  let tempCounter = 1;
-  for (const value of Object.values(villages)) {
-    displayCounter(tempCounter++, allVillages);
-    incomings[value.id] = getVillageAttacks(value.id);
-    attacksPerVillage[value.id] = 0;
-  }
+  const removedVillagesNumber = removedVillages.length;
 
+  // let tempCounter = 1;
+  // for (const value of Object.values(villages)) {
+  //   displayCounter(tempCounter++, allVillages);
+  //   incomings[value.id] = getVillageAttacks(value.id);
+  //   attacksPerVillage[value.id] = 0;
+  // }
 
-  for (const [id, value] of Object.entries(incomings)) {
-    const item = $(new DOMParser().parseFromString(value, 'text/html')).find('table');
-    const commands = item.find(cvData.commandRow);
+  // for (const [id, value] of Object.entries(incomings)) {
+  //   const item = $(new DOMParser().parseFromString(value, 'text/html')).find('table');
+  //   const commands = item.find(cvData.commandRow);
 
-    commands.each((_, item) => {
-      const commandType = $(item).find('span[data-command-type]').data('command-type');
-      if (commandType === 'attack') {
-        attacksPerVillage[id]++;
-      }
-    });
-  }
+  //   commands.each((_, item) => {
+  //     const commandType = $(item).find('span[data-command-type]').data('command-type');
+  //     if (commandType === 'attack') {
+  //       attacksPerVillage[id]++;
+  //     }
+  //   });
+  // }
 
-  for (const key of Object.keys(attacksPerVillage)) {
-    if(attacksPerVillage[key] >= maxAttacks) {
-      delete attacksPerVillage[key];
-    }
-  }
+  // for (const key of Object.keys(attacksPerVillage)) {
+  //   if(attacksPerVillage[key] >= maxAttacks) {
+  //     delete attacksPerVillage[key];
+  //   }
+  // }
 
-  for (const key of Object.keys(attacksPerVillage)) {
-    outputVillages[key] = villages[key];
-  }
+  // for (const key of Object.keys(attacksPerVillage)) {
+  //   outputVillages[key] = villages[key];
+  // }
 
-  displayOutputVillages(outputVillages);
+  displayOutputVillages(villages);
+  displayRemovedVillages(removedVillages, removedVillagesNumber);
 
   return false;
 }
@@ -172,7 +178,8 @@ const openModal = function () {
       <div class="row">
         <h4>Przefiltrowane dane</h4>
         <div class="counter"></div>
-        <div class="villages-output--div">
+        <div class="villages-output--div"></div>
+        <div class="removed-villages--div"></div>
       </div>
     </div>
   `;
@@ -182,40 +189,24 @@ const openModal = function () {
 }
 
 const getVillageData = function(coordsStr) {
-  setTimeout(function () {console.log('Sprawdzam wioskę o koordach ' + coordsStr);}, 500);
-
   const coords = coordsStr.split('|'),
         x      = coords[0],
         y      = coords[1];
 
-  let data;
-  $.ajax({
-    async: false,
-    url: '/game.php?village='+game_data.village.id+'&screen=api&ajax=target_selection&input='+x+'%7C'+y+'&type=coord',
-    dataType: 'json',
-    success: function(d) { data = d },
-    timeout: 500
-  });
-
-  if (data.villages.length < 1) {
+  const village = Object.values(villagesData).find(v => v.x === x && v.y === y);
+  if (!village) {
     return null;
   }
+  
+  const tribeId = playersData[villagesData[village.id].playerId].tribeId;
+  village.tribeId = tribeId;
 
-  const villageId = data.villages[0].id;
-  const tribeId = playersData[villagesData[villageId].playerId].tribeId;
-  const village = {
-    id: data.villages[0].id,
-    x:  data.villages[0].x,
-    y:  data.villages[0].y,
-    tribeId
-  };
+  console.log('Sprawdziłem wioskę o koordach ' + coordsStr);
 
   return village;
 }
 
 const getVillageAttacks = function(id) {
-  setTimeout(() => console.log('Sprawdzam ataki na ' + id), 500);
-
   let data;
 
   $.ajax({
@@ -225,6 +216,8 @@ const getVillageAttacks = function(id) {
     success: function(d) { data = d.incoming_html;},
     timeout: 500
   });
+
+  console.log('Sprawdziłem ataki na ' + id);
 
   return data;
 }
@@ -242,13 +235,25 @@ const displayCounter = function(temp, all) {
 }
 
 const displayOutputVillages = function(outputVillages) {
-  let outputStr = '<textarea>';
-  for (const [key, village] of Object.entries(outputVillages)) {
+  let outputStr = '<textarea style="width: 100%">';
+  for (const village of Object.values(outputVillages)) {
     outputStr += village.x +'|' + village.y + ' ';
   }
   outputStr += '</textarea>';
 
   $(cvData.villagesOutputDiv).html(outputStr);
+}
+
+const displayRemovedVillages = function (removedVillages, number) {
+  let outputStr = '<textarea style="width: 100%">';
+  for (const village of Object.values(removedVillages)) {
+    outputStr  += village.x +'|' + village.y + ' ';
+  }
+  outputStr    += '</textarea>';
+
+  outputStr    += '<p style="margin: 0; padding: .5rem">Usunięto <b>' + number + '</b> wiosek.</p>';
+
+  $(cvData.removedVillagesDiv).html(outputStr);
 }
 
 const closeModal = function() {

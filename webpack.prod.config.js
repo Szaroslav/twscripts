@@ -13,7 +13,7 @@ function generateComment(data) {
     let i = 0;
     for (const extension of extensions) {
         try {
-            const filePath = path.resolve(__dirname, 'src/public', `${data.chunk.name}${extension}`);
+            const filePath = path.resolve(__dirname, 'src', `${data.chunk.name}${extension}`);
             const fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
             if (commentRegExp.test(fileContent)) {
                 scriptComment = fileContent.match(commentRegExp)[0] + "\n";
@@ -47,7 +47,7 @@ module.exports = merge(config, {
             terserOptions: {
                 compress: false,
                 format: {
-                    comments: false,
+                    comments: true,
                     ascii_only: true
                 }
             }

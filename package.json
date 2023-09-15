@@ -1,8 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "test": "webpack --config webpack.dev.config.js",
-    "build": "webpack --config webpack.prod.config.js"
+    "build": "rollup -c"
   },
   "devDependencies": {
     "rollup": "^3.29.1",

@@ -1,36 +1,35 @@
 /**
  * BarbarianWallDemolisher.js v1.0
- * Szary (Plemiona: AGH Szary) i howcio
- * GitHub:       https://github.com/Szaroslav
- * Kod źródłowy: https://github.com/Szaroslav/twscripts
+ * Szary (Plemiona: AGH Szary) and howcio
+ * GitHub:      https://github.com/Szaroslav
+ * Source code: https://github.com/Szaroslav/twscripts/tree/master/scripts/build/BarbarianWallDemolisher.js
  * 
- * Zmodyfikowany i rozbudowany skrypt napisany przez howcio.
- * Umożliwia wysyłanie ataków burzących, za pomocą przycisku placu w panelu Asystenta Farmera.
- * Skrypt analizuje ostatnie raporty znajdujące się w Asystencie Farmera pod kątem 3 aspektów:
- * - poziom muru wykryty przez zwiadowców;
- * - częściowe straty (żółta kropka);
- * - pełne straty (czerwona kropka).
+ * Modified and extended script written by howcio.
+ * Allows sending the demolishing attack commands
+ * via rally point button in the Loot Assistant panel.
+ * Script bases on the recent reports located in the Loot Assistant panel,
+ * it evaluates or estimates level of the wall relying on 3 conditions:
+ * - level of the wall spotted by scouts;
+ * - partial losses (yellow dot);
+ * - full losses (red dot).
  */
 
 (function () {
   'use strict';
 
+  (function() {
   const BarbarianWallDemolisher = {
-    // Modifikowalne ustawienia skryptu
-    settings: {
-      // Ukrywanie wiosek bez murków do zbicia [true/false]
+    // Base of the user customisable settings
+    baseSettings: {
+      // Hide all villages without built wall [true/false]
       hideOthers:         true,
-      // Ukrywanie wiosek po wysłaniu ataku [true/false]
+      // Hide a village after sending the command [true/false]
       hideOnClick:        true,
-      // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
+      // Assumed level of the wall, if the attack suffered partial losses (yellow dot)
       yellowDotWallLevel: 1,
-      // Zakładany poziom muru, jeśli atak poniósł całkowite straty (czerwona kropka)
+      // Assumed level of the wall, if the attack suffered full losses (red dot)
       redDotWallLevel:    1, 
-      // Szablony wojsk na poszczególne poziomy murów
-      // axes   - topornicy
-      // scouts - zwiadowcy
-      // lights - lekka
-      // rams   - tarany
+      // Templates of troops per wall level
       templates: {
         1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2 },
         2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4 },
@@ -54,10 +53,9 @@
         20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 }
       }
     },
+    settings: {},
+    //////////////////////////////////////////////////////////////////////////////
 
-    /////////////////////////////////////////
-    //    Nie edytuj zawartości poniżej    //
-    /////////////////////////////////////////
     version:   "v1.0",
     observer:  null,
     activeRow: null,
@@ -180,5 +178,6 @@
   };
 
   BarbarianWallDemolisher.exec();
+  })();
 
 })();

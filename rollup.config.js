@@ -14,7 +14,7 @@ export default () => {
   return inputFilenames.map(filename => ({
     input: `./src/${filename}.js`,
     output: {
-      file: `./dist/${filename}.js`,
+      file: `./build/${filename}.js`,
       format: 'iife',
       banner: chunkInfo => {
         const fileContent = readFileSync(chunkInfo.facadeModuleId, { encoding: 'utf-8' });

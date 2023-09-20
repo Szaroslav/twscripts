@@ -1,4 +1,3 @@
-javascript:
 (async function() {
 
 const modal = $('#check_villages');

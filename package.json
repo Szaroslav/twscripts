@@ -5,10 +5,12 @@
   },
   "devDependencies": {
     "rollup": "^3.29.1",
+    "rollup-plugin-ascii": "^0.0.3",
     "rollup-plugin-strip-code": "^0.2.7",
     "terser-webpack-plugin": "^5.3.9"
   },
   "dependencies": {
-    "glob": "^10.3.4"
+    "glob": "^10.3.4",
+    "js-tokens": "^8.0.2"
   }
 }

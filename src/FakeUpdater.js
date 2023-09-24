@@ -3,17 +3,17 @@
 const modal = $('#check_villages');
 
 const cvData = {
-  mobileContent: '#mobileContent',
-  desktopContent: '#contentContainer',
-  checkVillagesForm: '.check-villages--form',
+  mobileContent:       '#mobileContent',
+  desktopContent:      '#contentContainer',
+  checkVillagesForm:   '.check-villages--form',
   villagesCoordsInput: '.villages-coords--input',
-  maxAttacksInput: '.max-attacks--input',
-  tribeIdsInput: '.tribe-ids--input',
-  villagesOutputDiv: '.villages-output--div',
-  removedVillagesDiv: '.removed-villages--div',
-  counter: '.counter',
-  commandRow: 'tr.command-row',
-  dataCommandType: 'command-type'
+  maxAttacksInput:     '.max-attacks--input',
+  tribeIdsInput:       '.tribe-ids--input',
+  villagesOutputDiv:   '.villages-output--div',
+  removedVillagesDiv:  '.removed-villages--div',
+  counter:             '.counter',
+  commandRow:          'tr.command-row',
+  dataCommandType:     'command-type'
 };
 
 const fetchRemoteData = async function (url, objectSchema) {

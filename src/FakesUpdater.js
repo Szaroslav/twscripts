@@ -16,7 +16,7 @@ const cvData = {
   dataCommandType:     'command-type'
 };
 
-const BARBARIANS_ID = 0;
+const BARBARIANS_ID = '0';
 
 const fetchRemoteData = async function (url, objectSchema) {
   const response = await fetch(url);
@@ -200,7 +200,7 @@ const getVillageData = function(coordsStr) {
   }
 
   const playerId = villagesData[village.id].playerId;
-  const tribeId = playerId > 0 ? playersData[playerId].tribeId : 0;
+  const tribeId = playerId !== '0' ? playersData[playerId].tribeId : '0';
   village.tribeId = tribeId;
 
   console.log('Sprawdziłem wioskę o koordach ' + coordsStr);

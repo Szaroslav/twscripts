@@ -1,13 +1,13 @@
 let inputData;
 
 while (true) {
-  inputData = prompt("Podaj coordy (np 555|555 111|234):");
+  inputData = prompt("Podaj koordy (np. 555|555 111|234):");
   const pattern = /^(\d{3}\|\d{3} )*\d{3}\|\d{3}$/;
   if (pattern.test(inputData)) {
     break;
   }
 
-  alert("NieprawidÅ‚owe coordy, wejÅ›cie: '111|111 222|222 333|333'.");
+  alert("Nieprawidłowe koordy, wejście: '111|111 222|222 333|333'.");
 }
 const coordinates = inputData.split(' ');
 async function fetchVillageData(villageId, coordinates) {
@@ -39,7 +39,7 @@ async function fetchVillageData(villageId, coordinates) {
 
     return nicknameCounts;
   } catch (error) {
-    console.error(`Brak atakow dla wioski o ID ${villageId}: ${error}`);
+    console.error(`Brak ataków dla wioski o ID ${villageId}: ${error}`);
     return null;
   }
 }
@@ -95,7 +95,7 @@ fetch(url)
 
     // Fetching attack nicknames for each village with pause
     const combinedData = {};
-    UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie atakÃ³w", "Zbieranie atakÃ³w - <b>dane graczy</b>. <br />Czekaj!")
+    UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane graczy</b>. <br />Czekaj!")
     for (const coord in villageData) {
       const id = villageData[coord];
       await pause(200); // Introduce a 200ms pause before each request
@@ -126,8 +126,8 @@ fetch(url)
     downloadFile(summaryFilename, summaryCsv);
 
     // Generate CSV from individual village data
-    let villageCsv = 'Koordy,Nazwa gracza,Liczba atakow (suma)\n';
-    UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie atakÃ³w", "Zbieranie atakÃ³w - <b>dane z wiosek</b>. <br />Czekaj!")
+    let villageCsv = 'Koordy,Nazwa gracza,Liczba ataków (suma)\n';
+    UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane z wiosek</b>. <br />Czekaj!")
     for (const coord in villageData) {
       const id = villageData[coord];
       await pause(200); // Introduce a 200ms pause before each request

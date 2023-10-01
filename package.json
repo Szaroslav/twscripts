@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "glob": "^10.3.4",
-    "js-tokens": "^8.0.2"
+    "js-tokens": "^8.0.2",
+    "rollup-plugin-handlebars-plus": "^0.4.2"
   }
 }

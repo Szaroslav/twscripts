@@ -1,18 +1,6 @@
-function main() {
-  const pattern = /^(\d{3}\|\d{3} )*\d{3}\|\d{3}$/;
-  let inputData;
-  while (true) {
-    inputData = prompt("Podaj koordy (np. 555|555 111|234):");
-    if (inputData === null || pattern.test(inputData)) {
-      break;
-    }
-    alert("Nieprawidłowe koordy, wejście: '111|111 222|222 333|333'.");
-  }
-  
-  if (inputData === null) {
-    return;
-  }
-  
+import MainTemplate from "./AttacksCounter.hbs";
+
+function fetchCommandsPerPlayer(inputData) {
   const coordinates = inputData.split(" ");
   async function fetchVillageData(villageId, coordinates) {
     const url = `https://${game_data.world}.plemiona.pl/game.php?village=${game_data.village.id}&screen=info_village&id=${villageId}#${coordinates}`;
@@ -43,7 +31,7 @@ function main() {
   
       return nicknameCounts;
     } catch (error) {
-      console.error(`Brak ataków dla wioski o ID ${villageId}: ${error}`);
+      console.warn(`Brak ataków dla wioski o ID ${villageId}: ${error}`);
       return null;
     }
   }
@@ -102,7 +90,7 @@ function main() {
       UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane graczy</b>. <br />Czekaj!")
       for (const coord in villageData) {
         const id = villageData[coord];
-        await pause(200); // Introduce a 200ms pause before each request
+        // await pause(200); // Introduce a 200ms pause before each request
         const result = await fetchVillageData(id, coord);
         for (const nickname in result) {
           if (!combinedData[nickname]) {
@@ -134,7 +122,7 @@ function main() {
       UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane z wiosek</b>. <br />Czekaj!")
       for (const coord in villageData) {
         const id = villageData[coord];
-        await pause(200); // Introduce a 200ms pause before each request
+        // await pause(200); // Introduce a 200ms pause before each request
         const result = await fetchVillageData(id, coord);
         for (const nickname in result) {
           const count = result[nickname];
@@ -149,6 +137,25 @@ function main() {
     .catch(error => {
       console.error("Error:", error);
     });
+}
+
+function main() {
+  console.log(MainTemplate);
+  const mainCell = document.querySelector("#main_layout .maincell");
+  const quickbar = mainCell.getElementById("quickbar_outer");
+  if (quickbar instanceof Element) {
+    quickbar.after(MainTemplate);
+  }
+  else {
+    mainCell.firstChild.before(MainTemplate);
+  }
+
+  const simplePopup = document.getElementById("temporary-popup");
+  simplePopup.onsubmit = e => {
+    e.preventDefault();
+    console.log(simplePopup.elements.inputCoords.value);
+    fetchCommandsPerPlayer(simplePopup.elements.inputCoords.value)
+  }
 }
 
 main();

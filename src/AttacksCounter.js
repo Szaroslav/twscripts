@@ -1,7 +1,39 @@
-import MainTemplate from "./AttacksCounter.hbs";
-
-function fetchCommandsPerPlayer(inputData) {
+function fetchCommandsPerPlayer(inputData, minPopulation) {
+  const populationPerUnit = {
+    spear:    1,
+    sword:    1,
+    axe:      1,
+    archer:   1,
+    spy:      2,
+    light:    4,
+    marcher:  5,
+    heavy:    6,
+    ram:      5,
+    catapult: 8,
+    knight:   10,
+    snob:     100
+  };
   const coordinates = inputData.split(" ");
+
+  function calculateCommandStrength(commandTable) {
+    const unitCells = commandTable.querySelectorAll("td.unit-item");
+
+    let strength = 0;
+    for (const unitCell of unitCells) {
+      const classNameMatch = unitCell.className.match(/unit-item-(\w+)/);
+      if (classNameMatch === null || classNameMatch.length < 2)
+        continue;
+      const unitName = classNameMatch[1];
+      const unitsNumber = Number(unitCell.textContent);
+      if (isNaN(unitsNumber))
+        continue;
+      console.log(unitName, unitsNumber, populationPerUnit[unitName])
+      strength += unitsNumber * populationPerUnit[unitName];
+    }
+
+    return strength;
+  }
+
   async function fetchVillageData(villageId, coordinates) {
     const url = `https://${game_data.world}.plemiona.pl/game.php?village=${game_data.village.id}&screen=info_village&id=${villageId}#${coordinates}`;
   
@@ -11,25 +43,38 @@ function fetchCommandsPerPlayer(inputData) {
       const tempContainer = document.createElement("div");
       tempContainer.innerHTML = html;
       const container = tempContainer.querySelector("#commands_outgoings");
-      const attackElements = container.querySelectorAll(".command-row");
-      const nicknameCounts = Array.from(attackElements).reduce((counts, element) => {
-        const nicknameElement = element.querySelector(".quickedit-label");
-        if (nicknameElement) {
-          const nicknameText = nicknameElement.textContent.trim();
-          const colonIndex = nicknameText.indexOf(":");
-          if (colonIndex !== -1) {
-            const nickname = nicknameText.substring(0, colonIndex).trim();
-            if (!counts[nickname]) {
-              counts[nickname] = 1;
-            } else {
-              counts[nickname]++;
-            }
-          }
+      const commandLinks = Array.from(tempContainer.querySelectorAll("#commands_incomings .quickedit-content > a"))
+        .filter(element => element.className === "");
+
+      const counts = {};
+      for (const element of commandLinks) {
+        const url = element.href;
+        const response = await fetch(url);
+        const html = await response.text();
+        const tempContainer = document.createElement("div");
+        tempContainer.innerHTML = html;
+
+        const commandTables = tempContainer.querySelectorAll("#content_value > .vis");
+        if (commandTables === null || commandTables.length < 2)
+          continue;
+
+        const attackerRow = commandTables[0].querySelector("tr:nth-child(2)"),
+              attackerCell = attackerRow.querySelector("td:last-child"),
+              nickname = attackerCell.textContent;
+
+        const commmandStrength = calculateCommandStrength(commandTables[1]);
+        if (commmandStrength < minPopulation)
+          continue;
+
+        if (!counts[nickname]) {
+          counts[nickname] = 1;
         }
-        return counts;
-      }, {});
-  
-      return nicknameCounts;
+        else {
+          counts[nickname]++;
+        }
+      }
+
+      return counts;
     } catch (error) {
       console.warn(`Brak ataków dla wioski o ID ${villageId}: ${error}`);
       return null;
@@ -140,9 +185,22 @@ function fetchCommandsPerPlayer(inputData) {
 }
 
 function main() {
-  console.log(MainTemplate);
+  const MainTemplate = document.createElement("div");
+  MainTemplate.innerHTML = `
+    <div class="content-border">
+      <div style="padding: 2px; border 1px solid #f9e1a8">
+        <div style="padding: 10px; width: 100%">
+          <form id="temporary-popup">
+            <textarea name="inputCoords"></textarea>
+            <input name="minTroopsNumber" type="number">
+            <input class="btn" type="submit" value="Wyciągnij rozkazy">
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
   const mainCell = document.querySelector("#main_layout .maincell");
-  const quickbar = mainCell.getElementById("quickbar_outer");
+  const quickbar = mainCell.querySelector("#quickbar_outer");
   if (quickbar instanceof Element) {
     quickbar.after(MainTemplate);
   }
@@ -153,8 +211,10 @@ function main() {
   const simplePopup = document.getElementById("temporary-popup");
   simplePopup.onsubmit = e => {
     e.preventDefault();
-    console.log(simplePopup.elements.inputCoords.value);
-    fetchCommandsPerPlayer(simplePopup.elements.inputCoords.value)
+    console.log();
+    const inputCoords = simplePopup.elements.inputCoords.value,
+          minTroopsNumber = simplePopup.elements.minTroopsNumber.value;
+    fetchCommandsPerPlayer(inputCoords, minTroopsNumber)
   }
 }
 

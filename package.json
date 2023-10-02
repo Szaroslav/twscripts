@@ -4,6 +4,7 @@
     "build": "rollup -c"
   },
   "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.3",
     "rollup": "^3.29.1",
     "rollup-plugin-ascii": "^0.0.3",
     "rollup-plugin-strip-code": "^0.2.7",

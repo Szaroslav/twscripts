@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { globSync } from "glob";
 import nodeResolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
+import terser from "@rollup/plugin-terser";
 import stripCode from "rollup-plugin-strip-code";
 import handlebars from "rollup-plugin-handlebars-plus";
 
@@ -34,6 +35,7 @@ export default () => {
       commonjs({
         include: "node_modules/**"
       }),
+      // terser(),
       stripCode({
         pattern: bannerCommentRegExp
       }),

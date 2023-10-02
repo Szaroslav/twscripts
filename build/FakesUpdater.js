@@ -21,6 +21,8 @@
     dataCommandType:     'command-type'
   };
 
+  const BARBARIANS_ID = '0';
+
   const fetchRemoteData = async function (url, objectSchema) {
     const response = await fetch(url);
     const responseData = await response.text();
@@ -85,7 +87,7 @@
     const targetElement = $(event.target);
 
     const villagesCoords = targetElement.find(cvData.villagesCoordsInput).val().split(' ');
-    const tribeIds = targetElement.find(cvData.tribeIdsInput).val().replace(' ', '').split(',');
+    const tribeIds = [ BARBARIANS_ID, ...targetElement.find(cvData.tribeIdsInput).val().replace(' ', '').split(',') ];
 
     targetElement.find(cvData.maxAttacksInput).val();
 
@@ -192,8 +194,9 @@
     if (!village) {
       return null;
     }
-    
-    const tribeId = playersData[villagesData[village.id].playerId].tribeId;
+
+    const playerId = villagesData[village.id].playerId;
+    const tribeId = playerId !== '0' ? playersData[playerId].tribeId : '0';
     village.tribeId = tribeId;
 
     console.log('Sprawdziłem wioskę o koordach ' + coordsStr);

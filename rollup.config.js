@@ -1,5 +1,7 @@
 import { readFileSync } from "node:fs";
 import { globSync } from "glob";
+import nodeResolve from "rollup-plugin-node-resolve";
+import commonjs from "rollup-plugin-commonjs";
 import stripCode from "rollup-plugin-strip-code";
 import handlebars from "rollup-plugin-handlebars-plus";
 
@@ -27,8 +29,11 @@ export default () => {
         return banner + "\n";
       }
     },
-    external: [ "handlebars" ],
     plugins: [
+      nodeResolve(),
+      commonjs({
+        include: "node_modules/**"
+      }),
       stripCode({
         pattern: bannerCommentRegExp
       }),

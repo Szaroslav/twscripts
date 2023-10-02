@@ -1,4 +1,4 @@
-function fetchCommandsPerPlayer(inputData, minPopulation) {
+function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
   const populationPerUnit = {
     spear:    1,
     sword:    1,
@@ -13,6 +13,7 @@ function fetchCommandsPerPlayer(inputData, minPopulation) {
     knight:   10,
     snob:     100
   };
+
   const coordinates = inputData.split(" ");
 
   function calculateCommandStrength(commandTable) {
@@ -27,7 +28,6 @@ function fetchCommandsPerPlayer(inputData, minPopulation) {
       const unitsNumber = Number(unitCell.textContent);
       if (isNaN(unitsNumber))
         continue;
-      console.log(unitName, unitsNumber, populationPerUnit[unitName])
       strength += unitsNumber * populationPerUnit[unitName];
     }
 
@@ -43,7 +43,7 @@ function fetchCommandsPerPlayer(inputData, minPopulation) {
       const tempContainer = document.createElement("div");
       tempContainer.innerHTML = html;
       const container = tempContainer.querySelector("#commands_outgoings");
-      const commandLinks = Array.from(tempContainer.querySelectorAll("#commands_incomings .quickedit-content > a"))
+      const commandLinks = Array.from(tempContainer.querySelectorAll("#commands_outgoings .quickedit-content > a"))
         .filter(element => element.className === "");
 
       const counts = {};
@@ -63,7 +63,7 @@ function fetchCommandsPerPlayer(inputData, minPopulation) {
               nickname = attackerCell.textContent;
 
         const commmandStrength = calculateCommandStrength(commandTables[1]);
-        if (commmandStrength < minPopulation)
+        if (commmandStrength < minPopulation || commmandStrength > maxPopulation)
           continue;
 
         if (!counts[nickname]) {
@@ -191,8 +191,9 @@ function main() {
       <div style="padding: 2px; border 1px solid #f9e1a8">
         <div style="padding: 10px; width: 100%">
           <form id="temporary-popup">
-            <textarea name="inputCoords"></textarea>
-            <input name="minTroopsNumber" type="number">
+            <textarea name="inputCoords" placeholder="Lista z koordynatami (oddzielona spacjami)"></textarea>
+            <input name="minPopulationInput" type="number" placeholder="Minimalna liczba jednostek">
+            <input name="maxPopulationInput" type="number" placeholder="Maksymalna liczba jednostek">
             <input class="btn" type="submit" value="Wyciągnij rozkazy">
           </form>
         </div>
@@ -211,11 +212,15 @@ function main() {
   const simplePopup = document.getElementById("temporary-popup");
   simplePopup.onsubmit = e => {
     e.preventDefault();
-    console.log();
-    const inputCoords = simplePopup.elements.inputCoords.value,
-          minTroopsNumber = simplePopup.elements.minTroopsNumber.value;
-    fetchCommandsPerPlayer(inputCoords, minTroopsNumber)
+
+    const minPopulationValue = simplePopup.elements.minPopulationInput.value,
+          maxPopulationValue = simplePopup.elements.maxPopulationInput.value;
+    const inputCoords        = simplePopup.elements.inputCoords.value,
+          minPopulation      = minPopulationValue !== "" ? Number(maxPopulationValue) : 0,
+          maxPopulation      = maxPopulationValue !== "" ? Number(maxPopulationValue) : Infinity;
+    fetchCommandsPerPlayer(inputCoords, minPopulation, maxPopulation);
   }
 }
+
 
 main();

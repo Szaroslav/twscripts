@@ -40,7 +40,20 @@
       );
     }
   }
-  console.log(supportInVillagesByPlayer);
+
+  const filteredSupportInVillagesByPlayer = {};
+  const playerNames = [ "Goliash77" ];
+  for (const villageName in supportInVillagesByPlayer) {
+    for (const playerName of playerNames) {
+      if (!supportInVillagesByPlayer[villageName][playerName])
+        continue;
+
+      if (!filteredSupportInVillagesByPlayer[villageName])
+        filteredSupportInVillagesByPlayer[villageName] = {};
+      filteredSupportInVillagesByPlayer[villageName][playerName] = supportInVillagesByPlayer[villageName][playerName];
+    }
+  }
+  console.log(filteredSupportInVillagesByPlayer);
 
   function parseUrlSearchQuery() {
     const rawUrlQuery = location.search;

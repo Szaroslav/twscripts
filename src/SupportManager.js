@@ -8,9 +8,12 @@
 
   const supportRows = document.querySelectorAll("#units_table tbody > tr");
   for (const supportRow of supportRows) {
-    if (supportRow.classList.contains("units_away"))
-      continue;
-    getPlayerName(supportRow);
+    if (supportRow.classList.contains("units_away")) {
+      getVillageName(supportRow);
+    }
+    else {
+      getPlayerName(supportRow);
+    }
   }
 
   function parseUrlSearchQuery() {
@@ -56,6 +59,15 @@
         namesToColumnIndexesMap[name] = parseInt(index);
         return namesToColumnIndexesMap;
       }, {});
+  }
+
+  function getVillageName(rowElement) {
+    const villageDetailsCell = rowElement.children[namesAndColumnIndexesMap["villageDetails"]];
+    const villageLink = villageDetailsCell.querySelector("span > span > a");
+    const rawVillageName = villageLink.querySelector("span").textContent.trim();
+    const villageInfoSuffixIndex = rawVillageName.search(/ \(\d{3}\|\d{3}\) \w\d+$/);
+    const villageName = rawVillageName.slice(0, villageInfoSuffixIndex);
+    return villageName;
   }
 
   function getPlayerName(rowElement) {

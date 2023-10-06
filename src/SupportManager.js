@@ -1,54 +1,72 @@
-function main() {
+(function () {
+
   const urlQuery = parseUrlSearchQuery();
   const columnIndexesToNamesMap = mapTableColumnIndexesToNames();
   const namesToColumnIndexesMap = mapNamesToTableColumnIndexes(columnIndexesToNamesMap);
   const namesAndColumnIndexesMap = { ...columnIndexesToNamesMap, ...namesToColumnIndexesMap };
   console.log(urlQuery, namesAndColumnIndexesMap);
-}
 
-function parseUrlSearchQuery() {
-  const rawUrlQuery = location.search;
-  const urlQuery = rawUrlQuery
-    .slice(1)
-    .split("&")
-    .reduce((urlParamsObject, currentRawParam) => {
-      const [ key, value ] = currentRawParam
-        .split("=")
-        .map(v => decodeURIComponent(v));
-      urlParamsObject[key] = value;
-      return urlParamsObject;
-    }, {});
+  const supportRows = document.querySelectorAll("#units_table tbody > tr");
+  for (const supportRow of supportRows) {
+    if (supportRow.classList.contains("units_away"))
+      continue;
+    getPlayerName(supportRow);
+  }
 
-    return urlQuery;
-}
+  function parseUrlSearchQuery() {
+    const rawUrlQuery = location.search;
+    const urlQuery = rawUrlQuery
+      .slice(1)
+      .split("&")
+      .reduce((urlParamsObject, currentRawParam) => {
+        const [ key, value ] = currentRawParam
+          .split("=")
+          .map(v => decodeURIComponent(v));
+        urlParamsObject[key] = value;
+        return urlParamsObject;
+      }, {});
 
-function mapTableColumnIndexesToNames() {
-  let map = {
-    0: "villageDetails",
-    1: "distance"
-  };
+      return urlQuery;
+  }
 
-  const tableHeaders = Array.from(document.querySelectorAll("#units_table thead tr:nth-child(2) th"));
-  const unitImagesWithIndex = tableHeaders
-    .map((header, i) => [ i, header ])
-    .filter(([ _, header ]) => header.querySelector("img"))
-    .map(([ i, header ]) => [ i, header.querySelector("img") ]);
-  const unitNamesMap = unitImagesWithIndex
-    .reduce((unitNamesMap, [ i, img ]) => {
-      unitNamesMap[i] = img.src.match(/\/unit_(\w+)\.\w+$/)[1];
-      return unitNamesMap;
-    }, {});
+  function mapTableColumnIndexesToNames() {
+    let map = {
+      0: "villageDetails",
+      1: "distance"
+    };
 
-  map = { ...map, ...unitNamesMap };
-  return map;
-}
+    const tableHeaders = Array.from(document.querySelectorAll("#units_table thead > tr:nth-child(2) th"));
+    const unitImagesWithIndex = tableHeaders
+      .map((header, i) => [ i, header ])
+      .filter(([ _, header ]) => header.querySelector("img"))
+      .map(([ i, header ]) => [ i, header.querySelector("img") ]);
+    const unitNamesMap = unitImagesWithIndex
+      .reduce((unitNamesMap, [ i, img ]) => {
+        unitNamesMap[i] = img.src.match(/\/unit_(\w+)\.\w+$/)[1];
+        return unitNamesMap;
+      }, {});
 
-function mapNamesToTableColumnIndexes(columnIndexesToNamesMap) {
-  return Object.entries(columnIndexesToNamesMap)
-    .reduce((namesToColumnIndexesMap, [ index, name ]) => {
-      namesToColumnIndexesMap[name] = parseInt(index);
-      return namesToColumnIndexesMap;
-    }, {});
-}
+    map = { ...map, ...unitNamesMap };
+    return map;
+  }
 
-main();
+  function mapNamesToTableColumnIndexes(columnIndexesToNamesMap) {
+    return Object.entries(columnIndexesToNamesMap)
+      .reduce((namesToColumnIndexesMap, [ index, name ]) => {
+        namesToColumnIndexesMap[name] = parseInt(index);
+        return namesToColumnIndexesMap;
+      }, {});
+  }
+
+  function getPlayerName(rowElement) {
+    const villageDetailsCell = rowElement.children[namesAndColumnIndexesMap["villageDetails"]];
+    const playerProfileLink = villageDetailsCell.querySelector("span[id^=label_text_] > a:first-of-type");
+    if (!playerProfileLink) {
+      // User's support row.
+      return null;
+    }
+    const playerName = playerProfileLink.textContent;
+    return playerName;
+  }
+
+})();

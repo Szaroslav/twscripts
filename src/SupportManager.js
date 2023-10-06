@@ -1,20 +1,46 @@
 (function () {
 
+  const unitNames = [
+    "spear",
+    "sword",
+    "axe",
+    "archer",
+    "spy",
+    "light",
+    "marcher",
+    "heavy",
+    "ram",
+    "catapult",
+    "knight",
+    "snob"
+  ];
+
   const urlQuery = parseUrlSearchQuery();
   const columnIndexesToNamesMap = mapTableColumnIndexesToNames();
   const namesToColumnIndexesMap = mapNamesToTableColumnIndexes(columnIndexesToNamesMap);
   const namesAndColumnIndexesMap = { ...columnIndexesToNamesMap, ...namesToColumnIndexesMap };
-  console.log(urlQuery, namesAndColumnIndexesMap);
 
+  const supportInVillagesByPlayer = {};
   const supportRows = document.querySelectorAll("#units_table tbody > tr");
+  let currentVillageName = null;
   for (const supportRow of supportRows) {
     if (supportRow.classList.contains("units_away")) {
-      getVillageName(supportRow);
+      currentVillageName = getVillageName(supportRow);
     }
     else {
-      getPlayerName(supportRow);
+      const playerName = getPlayerName(supportRow);
+      if (!supportInVillagesByPlayer[currentVillageName])
+        supportInVillagesByPlayer[currentVillageName] = {};
+      if (!supportInVillagesByPlayer[currentVillageName][playerName])
+        supportInVillagesByPlayer[currentVillageName][playerName] = {};
+
+      updateSupportUnitsOfVillageAndPlayer(
+        supportInVillagesByPlayer[currentVillageName][playerName],
+        supportRow
+      );
     }
   }
+  console.log(supportInVillagesByPlayer);
 
   function parseUrlSearchQuery() {
     const rawUrlQuery = location.search;
@@ -79,6 +105,20 @@
     }
     const playerName = playerProfileLink.textContent;
     return playerName;
+  }
+
+  function updateSupportUnitsOfVillageAndPlayer(supportInVillageOfPlayer, rowElement) {
+    for (const unitName of unitNames) {
+      const unitsCell = rowElement.children[namesAndColumnIndexesMap[unitName]];
+      if (!unitsCell) {
+        // This world disabled this specific unit type.
+        continue;
+      }
+      const unitsNumber = Number(unitsCell.textContent);
+      if (!supportInVillageOfPlayer[unitName])
+        supportInVillageOfPlayer[unitName] = 0;
+      supportInVillageOfPlayer[unitName] += unitsNumber;
+    }
   }
 
 })();

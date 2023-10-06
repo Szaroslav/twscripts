@@ -1,7 +1,9 @@
 function main() {
   const urlQuery = parseUrlSearchQuery();
-  const columnsToNamesMap = mapTableColumnsToNames();
-  console.log(urlQuery, columnsToNamesMap);
+  const columnIndexesToNamesMap = mapTableColumnIndexesToNames();
+  const namesToColumnIndexesMap = mapNamesToTableColumnIndexes(columnIndexesToNamesMap);
+  const namesAndColumnIndexesMap = { ...columnIndexesToNamesMap, ...namesToColumnIndexesMap };
+  console.log(urlQuery, namesAndColumnIndexesMap);
 }
 
 function parseUrlSearchQuery() {
@@ -20,7 +22,7 @@ function parseUrlSearchQuery() {
     return urlQuery;
 }
 
-function mapTableColumnsToNames() {
+function mapTableColumnIndexesToNames() {
   let map = {
     0: "villageDetails",
     1: "distance"
@@ -39,6 +41,14 @@ function mapTableColumnsToNames() {
 
   map = { ...map, ...unitNamesMap };
   return map;
+}
+
+function mapNamesToTableColumnIndexes(columnIndexesToNamesMap) {
+  return Object.entries(columnIndexesToNamesMap)
+    .reduce((namesToColumnIndexesMap, [ index, name ]) => {
+      namesToColumnIndexesMap[name] = parseInt(index);
+      return namesToColumnIndexesMap;
+    }, {});
 }
 
 main();

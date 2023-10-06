@@ -14,6 +14,20 @@
     "knight",
     "snob"
   ];
+  const populationPerUnit = {
+    spear:    1,
+    sword:    1,
+    axe:      1,
+    archer:   1,
+    spy:      0,
+    light:    4,
+    marcher:  5,
+    heavy:    4,
+    ram:      5,
+    catapult: 8,
+    knight:   10,
+    snob:     100
+  };
 
   const urlQuery = parseUrlSearchQuery();
   const columnIndexesToNamesMap = mapTableColumnIndexesToNames();
@@ -121,6 +135,9 @@
   }
 
   function updateSupportUnitsOfVillageAndPlayer(supportInVillageOfPlayer, rowElement) {
+    if (!supportInVillageOfPlayer.totalPopulation)
+      supportInVillageOfPlayer.totalPopulation = 0;
+
     for (const unitName of unitNames) {
       const unitsCell = rowElement.children[namesAndColumnIndexesMap[unitName]];
       if (!unitsCell) {
@@ -131,6 +148,7 @@
       if (!supportInVillageOfPlayer[unitName])
         supportInVillageOfPlayer[unitName] = 0;
       supportInVillageOfPlayer[unitName] += unitsNumber;
+      supportInVillageOfPlayer.totalPopulation += unitsNumber * populationPerUnit[unitName];
     }
   }
 

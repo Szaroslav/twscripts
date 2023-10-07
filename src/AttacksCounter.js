@@ -43,7 +43,10 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
       const tempContainer = document.createElement("div");
       tempContainer.innerHTML = html;
       const container = tempContainer.querySelector("#commands_outgoings");
-      const commandLinks = Array.from(tempContainer.querySelectorAll("#commands_outgoings .quickedit-content > a"))
+      const commandsContainer = document.querySelector("#commands_outgoings")
+                              ? "#commands_outgoings"
+                              : "#commands_incomings";
+      const commandLinks = Array.from(tempContainer.querySelectorAll(`${commandsContainer} .quickedit-content > a`))
         .filter(element => element.className === "")
         .filter(element =>
           element.querySelector("[data-command-type]").getAttribute("data-command-type") !== "support");

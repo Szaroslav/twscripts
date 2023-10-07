@@ -36,7 +36,7 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
 
   async function fetchVillageData(villageId, coordinates) {
     const url = `https://${game_data.world}.plemiona.pl/game.php?village=${game_data.village.id}&screen=info_village&id=${villageId}#${coordinates}`;
-  
+
     try {
       const response = await fetch(url);
       const html = await response.text();
@@ -44,7 +44,9 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
       tempContainer.innerHTML = html;
       const container = tempContainer.querySelector("#commands_outgoings");
       const commandLinks = Array.from(tempContainer.querySelectorAll("#commands_outgoings .quickedit-content > a"))
-        .filter(element => element.className === "");
+        .filter(element => element.className === "")
+        .filter(element =>
+          element.querySelector("[data-command-type]").getAttribute("data-command-type") !== "support");
 
       const counts = {};
       for (const element of commandLinks) {
@@ -80,12 +82,12 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
       return null;
     }
   }
-  
+
   // Function to introduce a pause
   function pause(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-  
+
   // Function to download a file
   function downloadFile(filename, content) {
     const element = document.createElement("a");
@@ -96,10 +98,10 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
     element.click();
     document.body.removeChild(element);
   }
-  
+
   // URL for the request
   const url = `https://${game_data.world}.plemiona.pl/map/village.txt`;
-  
+
   // Making the request using fetch
   fetch(url)
     .then(response => {
@@ -111,15 +113,15 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
     .then(async body => {
       const rows = body.split("\n");
       const villageData = {};
-  
+
       // Parsing the response and extracting the IDs based on coordinates
       rows.forEach(row => {
         const values = row.split(",");
-  
+
         if (values.length >= 5) {
           const x = parseInt(values[2]);
           const y = parseInt(values[3]);
-  
+
           coordinates.forEach(coord => {
             const [cx, cy] = coord.split("|");
             if (x === parseInt(cx) && y === parseInt(cy)) {
@@ -129,7 +131,7 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
           });
         }
       });
-  
+
       // Fetching attack nicknames for each village with pause
       const combinedData = {};
       UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane graczy</b>. <br />Czekaj!")
@@ -148,20 +150,19 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
         const totalVillages = Object.keys(villageData).length;
         UI.InfoMessage(`Zebrano dane z ${villageCount} wiosek`);
       }
-  
-  
+
       // Generate CSV from combined data (attack count summary)
       let summaryCsv = "Nazwa gracza,Liczba atakow (suma)\n";
-  
+
       for (const nickname in combinedData) {
         const count = combinedData[nickname];
         summaryCsv += `${nickname},${count}\n`;
       }
-  
+
       // Download the attack count summary CSV file
       const summaryFilename = "gracze.csv";
       downloadFile(summaryFilename, summaryCsv);
-  
+
       // Generate CSV from individual village data
       let villageCsv = "Koordy,Nazwa gracza,Liczba ataków (suma)\n";
       UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane z wiosek</b>. <br />Czekaj!")
@@ -174,7 +175,7 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
           villageCsv += `${coord},${nickname},${count}\n`;
         }
       }
-  
+
       // Download the individual village data CSV file
       const villageFilename = "wioski.csv";
       downloadFile(villageFilename, villageCsv);
@@ -221,6 +222,5 @@ function main() {
     fetchCommandsPerPlayer(inputCoords, minPopulation, maxPopulation);
   }
 }
-
 
 main();

@@ -77,7 +77,7 @@ const BarbarianWallDemolisher = {
         // Find the button and add onclick event handler function
         // to remove a row after sending the attack.
         this.observer = new MutationObserver(this.handleDocumentChange.bind(this));
-        this.observer.observe(document, { childList: true, subtree: true }); 
+        this.observer.observe(document.body, { childList: true, subtree: true }); 
       }
 
       const plunderList = $("#plunder_list")[0].rows;

@@ -63,15 +63,15 @@ const BarbarianWallDemolisher = {
   activeRow: null,
 
   exec() {
-    if (typeof userSettings !== "undefined") {
-      this.initSettings(userSettings);
-    }
-    else {
-      this.initSettings({});
-    }
-
     // Verify, if user is in the Loot Assitant panel.
     if (game_data.screen === "am_farm") {
+      if (typeof userSettings !== "undefined") {
+        this.initSettings(userSettings);
+      }
+      else {
+        this.initSettings({});
+      }
+
       if (this.settings.hideOnClick) {
         // Observe the DOM, whenever it changes.
         // Find the button and add onclick event handler function

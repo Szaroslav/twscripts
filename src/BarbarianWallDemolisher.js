@@ -1,5 +1,5 @@
 /**
- * BarbarianWallDemolisher.js v1.0
+ * BarbarianWallDemolisher.js v1.1
  * Szary (Plemiona: AGH Szary) i howcio
  * GitHub:       https://github.com/Szaroslav
  * Kod źródłowy: https://github.com/Szaroslav/twscripts
@@ -16,13 +16,16 @@ const BarbarianWallDemolisher = {
   // Modifikowalne ustawienia skryptu
   settings: {
     // Ukrywanie wiosek bez murków do zbicia [true/false]
-    hideOthers:         true,
+    hideOthers:          true,
     // Ukrywanie wiosek po wysłaniu ataku [true/false]
-    hideOnClick:        true,
+    hideOnClick:         true,
+    // Wyłącznie skanowanie wioski [true/false],
+    // jeśli nie mamy informacji o wiosce (nadpisuje opcję z żółtą i czerwoną kropką)
+    scanIfNoInformation: false,
     // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
-    yellowDotWallLevel: 1,
+    yellowDotWallLevel:  1,
     // Zakładany poziom muru, jeśli atak poniósł całkowite straty (czerwona kropka)
-    redDotWallLevel:    1, 
+    redDotWallLevel:     1,
     // Szablony wojsk na poszczególne poziomy murów
     // axes   - topornicy
     // scouts - zwiadowcy
@@ -55,7 +58,7 @@ const BarbarianWallDemolisher = {
   /////////////////////////////////////////
   //    Nie edytuj zawartości poniżej    //
   /////////////////////////////////////////
-  version:   "v1.0",
+  version:   "v1.1",
   observer:  null,
   activeRow: null,
 
@@ -90,16 +93,16 @@ const BarbarianWallDemolisher = {
   },
 
   initSettings(settings) {
-    for (const prop in this.baseSettings) {
+    for (const prop in this.settings) {
       this.settings[prop] = settings[prop]
                           ? settings[prop]
-                          : this.baseSettings[prop];
+                          : this.settings[prop];
     }
 
-    const baseTemplates = this.baseSettings.templates;
-    for (const wallLevel in baseTemplates) {
+    const templates = this.settings.templates;
+    for (const wallLevel in templates) {
       if (!this.settings.templates[wallLevel]) {
-        this.settings.templates[wallLevel] = baseTemplates[wallLevel];
+        this.settings.templates[wallLevel] = templates[wallLevel];
       }
     }
   },
@@ -140,16 +143,29 @@ const BarbarianWallDemolisher = {
     if (wallLevel === 0 && isRed)
       wallLevel = this.settings.redDotWallLevel;
 
-    if (wallLevel > 0) {
-      const templates = this.settings.templates;
-      const commandParameters = {
+    const needToScan = this.settings.scanIfNoInformation && (isYellow || isRed);
+
+    if (wallLevel > 0 || needToScan) {
+      const commonCommandParameters = {
         target_village_id: row.cells[11].getElementsByTagName("a")[0].href.split("target=")[1],
-        from:              "simulator",
-        att_axe:           templates[wallLevel]["axes"],
-        att_spy:           templates[wallLevel]["scouts"],
-        att_light:         templates[wallLevel]["lights"],
-        att_ram:           templates[wallLevel]["rams"]
+        from:              "simulator"
       };
+      let unitsCommandParameters = {
+        att_axe:           0,
+        att_spy:           1,
+        att_light:         0,
+        att_ram:           0
+      };
+      if (!needToScan) {
+        const templates = this.settings.templates;
+        unitsCommandParameters = {
+          att_axe:         templates[wallLevel]["axes"],
+          att_spy:         templates[wallLevel]["scouts"],
+          att_light:       templates[wallLevel]["lights"],
+          att_ram:         templates[wallLevel]["rams"]
+        };
+      }
+      const commandParameters = { ...commonCommandParameters, ...unitsCommandParameters };
 
       const commandButton   = row.cells[11].getElementsByTagName("a")[0];
       commandButton.removeAttribute("onclick");

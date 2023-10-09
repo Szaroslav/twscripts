@@ -146,8 +146,9 @@ const BarbarianWallDemolisher = {
     const needToScan = this.settings.scanIfNoInformation && (isYellow || isRed);
 
     if (wallLevel > 0 || needToScan) {
+      const sendManuallyCommandCell = row.cells[row.cells.length - 1];
       const commonCommandParameters = {
-        target_village_id: row.cells[11].getElementsByTagName("a")[0].href.split("target=")[1],
+        target_village_id: sendManuallyCommandCell.getElementsByTagName("a")[0].href.split("target=")[1],
         from:              "simulator"
       };
       let unitsCommandParameters = {
@@ -167,7 +168,7 @@ const BarbarianWallDemolisher = {
       }
       const commandParameters = { ...commonCommandParameters, ...unitsCommandParameters };
 
-      const commandButton   = row.cells[11].getElementsByTagName("a")[0];
+      const commandButton   = sendManuallyCommandCell.getElementsByTagName("a")[0];
       commandButton.removeAttribute("onclick");
       commandButton.href   += $.param(commandParameters);
       commandButton.onclick = this.handleCommandClick.bind(this, commandParameters, row);

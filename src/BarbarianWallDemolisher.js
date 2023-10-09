@@ -74,7 +74,7 @@ const BarbarianWallDemolisher = {
         this.initSettings({});
       }
 
-      if (this.baseSettings.hideOnClick) {
+      if (this.settings.hideOnClick) {
         // Observe the DOM, whenever it changes.
         // Find the button and add onclick event handler function
         // to remove a row after sending the attack.
@@ -138,12 +138,12 @@ const BarbarianWallDemolisher = {
       wallLevel = Math.max(wallLevel, rowWallLevel);
     const isYellow = /dots\/yellow\.[a-z]+$/.test(dotImage.src);
     if (wallLevel === 0 && isYellow)
-      wallLevel = this.baseSettings.yellowDotWallLevel;
+      wallLevel = this.settings.yellowDotWallLevel;
     const isRed = /dots\/red\.[a-z]+$/.test(dotImage.src);
     if (wallLevel === 0 && isRed)
-      wallLevel = this.baseSettings.redDotWallLevel;
+      wallLevel = this.settings.redDotWallLevel;
 
-    const needToScan = this.baseSettings.scanIfNoInformation && (isYellow || isRed);
+    const needToScan = this.settings.scanIfNoInformation && (isYellow || isRed);
 
     if (wallLevel > 0 || needToScan) {
       const sendManuallyCommandCell = row.cells[row.cells.length - 1];
@@ -158,7 +158,7 @@ const BarbarianWallDemolisher = {
         att_ram:           0
       };
       if (!needToScan) {
-        const templates = this.baseSettings.templates;
+        const templates = this.settings.templates;
         unitsCommandParameters = {
           att_axe:         templates[wallLevel]["axes"],
           att_spy:         templates[wallLevel]["scouts"],
@@ -174,7 +174,7 @@ const BarbarianWallDemolisher = {
       commandButton.onclick = this.handleCommandClick.bind(this, commandParameters, row);
     }
     else {
-      if (this.baseSettings.hideOthers) {
+      if (this.settings.hideOthers) {
         row.style.display = "none";
       }
     }
@@ -187,7 +187,7 @@ const BarbarianWallDemolisher = {
       CommandPopup.openRallyPoint(parameters);
     }
     
-    if (this.baseSettings.hideOnClick) {
+    if (this.settings.hideOnClick) {
       this.activeRow = row;
     }
   }

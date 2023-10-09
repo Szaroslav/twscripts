@@ -78,9 +78,11 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
         }
       }
 
+      console.info(`Wioska ${coordinates} (ID: ${villageId}) została przetworzona.`);
+
       return counts;
     } catch (error) {
-      console.warn(`Brak ataków dla wioski o ID ${villageId}: ${error}`);
+      console.warn(`Brak ataków dla wioski ${coordinates} (ID: ${villageId}): ${error}`);
       return null;
     }
   }

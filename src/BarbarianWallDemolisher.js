@@ -14,7 +14,7 @@
 
 const BarbarianWallDemolisher = {
   // Modifikowalne ustawienia skryptu
-  settings: {
+  baseSettings: {
     // Ukrywanie wiosek bez murków do zbicia [true/false]
     hideOthers:          true,
     // Ukrywanie wiosek po wysłaniu ataku [true/false]
@@ -54,6 +54,7 @@ const BarbarianWallDemolisher = {
       20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 }
     }
   },
+  settings: {},
 
   /////////////////////////////////////////
   //    Nie edytuj zawartości poniżej    //
@@ -72,7 +73,7 @@ const BarbarianWallDemolisher = {
         this.initSettings({});
       }
 
-      if (this.settings.hideOnClick) {
+      if (this.baseSettings.hideOnClick) {
         // Observe the DOM, whenever it changes.
         // Find the button and add onclick event handler function
         // to remove a row after sending the attack.
@@ -93,17 +94,15 @@ const BarbarianWallDemolisher = {
   },
 
   initSettings(settings) {
-    for (const prop in this.settings) {
+    for (const prop in this.baseSettings) {
       this.settings[prop] = settings[prop]
                           ? settings[prop]
-                          : this.settings[prop];
+                          : this.baseSettings[prop];
     }
 
-    const templates = this.settings.templates;
+    const templates = this.baseSettings.templates;
     for (const wallLevel in templates) {
-      if (!this.settings.templates[wallLevel]) {
-        this.settings.templates[wallLevel] = templates[wallLevel];
-      }
+      this.settings.templates[wallLevel] = this.settings.templates[wallLevel] ?? templates[wallLevel];
     }
   },
 
@@ -138,12 +137,12 @@ const BarbarianWallDemolisher = {
       wallLevel = Math.max(wallLevel, rowWallLevel);
     const isYellow = /dots\/yellow\.[a-z]+$/.test(dotImage.src);
     if (wallLevel === 0 && isYellow)
-      wallLevel = this.settings.yellowDotWallLevel;
+      wallLevel = this.baseSettings.yellowDotWallLevel;
     const isRed = /dots\/red\.[a-z]+$/.test(dotImage.src);
     if (wallLevel === 0 && isRed)
-      wallLevel = this.settings.redDotWallLevel;
+      wallLevel = this.baseSettings.redDotWallLevel;
 
-    const needToScan = this.settings.scanIfNoInformation && (isYellow || isRed);
+    const needToScan = this.baseSettings.scanIfNoInformation && (isYellow || isRed);
 
     if (wallLevel > 0 || needToScan) {
       const sendManuallyCommandCell = row.cells[row.cells.length - 1];
@@ -158,7 +157,7 @@ const BarbarianWallDemolisher = {
         att_ram:           0
       };
       if (!needToScan) {
-        const templates = this.settings.templates;
+        const templates = this.baseSettings.templates;
         unitsCommandParameters = {
           att_axe:         templates[wallLevel]["axes"],
           att_spy:         templates[wallLevel]["scouts"],
@@ -174,7 +173,7 @@ const BarbarianWallDemolisher = {
       commandButton.onclick = this.handleCommandClick.bind(this, commandParameters, row);
     }
     else {
-      if (this.settings.hideOthers) {
+      if (this.baseSettings.hideOthers) {
         row.style.display = "none";
       }
     }
@@ -187,7 +186,7 @@ const BarbarianWallDemolisher = {
       CommandPopup.openRallyPoint(parameters);
     }
     
-    if (this.settings.hideOnClick) {
+    if (this.baseSettings.hideOnClick) {
       this.activeRow = row;
     }
   }

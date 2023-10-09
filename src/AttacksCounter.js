@@ -42,11 +42,10 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
       const html = await response.text();
       const tempContainer = document.createElement("div");
       tempContainer.innerHTML = html;
-      const container = tempContainer.querySelector("#commands_outgoings");
-      const commandsContainer = document.querySelector("#commands_outgoings")
-                              ? "#commands_outgoings"
-                              : "#commands_incomings";
-      const commandLinks = Array.from(tempContainer.querySelectorAll(`${commandsContainer} .quickedit-content > a`))
+      const commandsContainerId = tempContainer.querySelector("#commands_outgoings")
+                                ? "#commands_outgoings"
+                                : "#commands_incomings";
+      const commandLinks = Array.from(tempContainer.querySelectorAll(`${commandsContainerId} .quickedit-content > a`))
         .filter(element => element.className === "")
         .filter(element =>
           element.querySelector("[data-command-type]").getAttribute("data-command-type") !== "support");
@@ -220,7 +219,7 @@ function main() {
     const minPopulationValue = simplePopup.elements.minPopulationInput.value,
           maxPopulationValue = simplePopup.elements.maxPopulationInput.value;
     const inputCoords        = simplePopup.elements.inputCoords.value,
-          minPopulation      = minPopulationValue !== "" ? Number(maxPopulationValue) : 0,
+          minPopulation      = minPopulationValue !== "" ? Number(minPopulationValue) : 0,
           maxPopulation      = maxPopulationValue !== "" ? Number(maxPopulationValue) : Infinity;
     fetchCommandsPerPlayer(inputCoords, minPopulation, maxPopulation);
   }

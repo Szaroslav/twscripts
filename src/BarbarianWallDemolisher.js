@@ -13,6 +13,7 @@
  */
 
 const BarbarianWallDemolisher = {
+
   // Modifikowalne ustawienia skryptu
   baseSettings: {
     // Ukrywanie wiosek bez murków do zbicia [true/false]
@@ -32,26 +33,26 @@ const BarbarianWallDemolisher = {
     // lights - lekka
     // rams   - tarany
     templates: {
-      1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2 },
-      2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4 },
-      3:  { "axes": 10, "scouts": 1, "lights": 8,  "rams": 8 },
+      1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2  },
+      2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4  },
+      3:  { "axes": 10, "scouts": 1, "lights": 8,  "rams": 8  },
       4:  { "axes": 15, "scouts": 1, "lights": 15, "rams": 10 },
       5:  { "axes": 25, "scouts": 1, "lights": 20, "rams": 15 },
-      6:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      7:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      8:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      9:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      10: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      11: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      12: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      13: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      14: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      15: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      16: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      17: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      18: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 },
-      20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0 }
+      6:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      7:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      8:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      9:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      10: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      11: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      12: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      13: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      14: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      15: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      16: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      17: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      18: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  }
     }
   },
   settings: {},
@@ -190,6 +191,7 @@ const BarbarianWallDemolisher = {
       this.activeRow = row;
     }
   }
+
 };
 
 BarbarianWallDemolisher.exec();

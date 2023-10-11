@@ -14,7 +14,7 @@
 
 const BarbarianWallDemolisher = {
 
-  // Modifikowalne ustawienia skryptu
+  // Modyfikowalne ustawienia skryptu
   baseSettings: {
     // Ukrywanie wiosek bez murków do zbicia [true/false]
     hideOthers:          true,

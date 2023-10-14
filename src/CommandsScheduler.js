@@ -357,7 +357,70 @@ function rysujPlaner() {
         return;
       }
     });
-  var elem = "<div class='vis vis_item' style='overflow: auto; height: 300px;' id='planer_klinow'><table width='100%'><tr><td width='300'><table style=\"border-spacing: 3px; border-collapse: separate;\"><tr><th>Cel<th>Data<th>Godzina<th>Grupa<th><th><tr><td><input size=8 type='text' onchange='pokazOdleglosc();' value='" + cel + "' id='wspolrzedneCelu' /><td><input size=8 type='text' value='" + obecnyCzas.getDate() + "." + (obecnyCzas.getMonth() + 1) + "." + obecnyCzas.getFullYear() + "' onchange=\"poprawDate(this,'.');\" id='data_wejscia'/><td><input size=8 type='text' value='" + obecnyCzas.getHours() + ":" + obecnyCzas.getMinutes() + ":" + obecnyCzas.getSeconds() + "' onchange=\"poprawDate(this,':');\" id='godzina_wejscia'/><td><select id='listGrup' onchange=\"zmienGrupe();\"><option value='" + wszystkieWojska + "'>Wszystkie</select><td onclick=\"zmienStrzalke(); if($('#wyborWojsk').is(':visible')){ $('#wyborWojsk').hide();$('#lista_wojska').show(); zapiszWybrane(); return;}	else{ $('#lista_wojska').hide(); $('#wyborWojsk').show();} \" style=\"cursor:pointer;\"><span id='strzaleczka' class='icon header arr_down' ></span><td><input type='button' class='btn' value='Oblicz' onclick=\"wypiszMozliwosci();\" id='przycisk'></table><td id='ladowanie'><img src='" + image_base + "throbber.gif' />";
+  var elem = `
+    <div id="planer_klinow" class="vis vis_item" style="overflow: auto; height: 300px;">
+      <table width="100%">
+        <tr>
+          <td width="300">
+            <table style="border-spacing: 3px; border-collapse: separate;">
+              <tr>
+                <th>Cel</th>
+                <th>Data</th>
+                <th>Godzina</th>
+                <th>Grupa</th>
+                <th></th>
+                <th></th>
+              </tr>
+              <tr>
+                <td>
+                  <input id="wspolrzedneCelu" size=8 type="text" onchange="pokazOdleglosc();" value="${cel}">
+                </td>
+                <td>
+                  <input
+                    id="data_wejscia"
+                    size=8
+                    type="text"
+                    value="${obecnyCzas.getDate()}.${obecnyCzas.getMonth() + 1}.${obecnyCzas.getFullYear()}"
+                    onchange="poprawDate(this, ".");"
+                  >
+                </td>
+                <td>
+                  <input
+                    id="godzina_wejscia"
+                    size=8
+                    type="text"
+                    value="${obecnyCzas.getHours()}:${obecnyCzas.getMinutes()}:${obecnyCzas.getSeconds()}"
+                    onchange="poprawDate(this, ":");"
+                  >
+                </td>
+                <td>
+                  <select id="listGrup" onchange="zmienGrupe();">
+                    <option value="${wszystkieWojska}">Wszystkie</option>
+                  </select>
+                </td>
+                <td onclick="
+                  zmienStrzalke();
+                  if($("#wyborWojsk").is(":visible")) {
+                    $("#wyborWojsk").hide();
+                    $("#lista_wojska").show();
+                    zapiszWybrane();
+                    return;
+                  }
+                  else {
+                    $("#lista_wojska").hide();
+                    $("#wyborWojsk").show();
+                  }
+                "
+                  style="cursor: pointer"
+                >
+                  <span id="strzaleczka" class="icon header arr_down" ></span>
+                </td>
+                <td>
+                  <input id="przycisk" type="button" class="btn" value="Oblicz" onclick="wypiszMozliwosci();">
+              </table>
+            <td id="ladowanie">
+              <img src="${image_base}throbber.gif">
+  `;
   elem += "<tr><td colspan=2 width='100%'><table style=\"display: none; border-spacing: 3px; border-collapse: separate;\" id='wyborWojsk' width='100%'></table><table style=\"border-spacing: 3px; border-collapse: separate;\" id='lista_wojska' width='100%'><thead><tr><th id='ilosc_mozliwosci'><span class='icon header village' ></span>";
 
   for (i = 0; i < obrazki.length; i++)

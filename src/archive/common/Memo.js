@@ -15,7 +15,7 @@ const _Memo = {
         let p = $.Deferred().resolve();
         for (let i = 0; i < contents.length; i++) {
             p = p
-                .then(() => this.addTab())
+                .then(() => Memo.addTab())
                 .then(() => this.renameTab(`Rozpiska [${i + 1}]`))
                 .then(() => this.setContent(contents[i]));
         }

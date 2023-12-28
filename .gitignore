@@ -21,6 +21,8 @@
 .eslintcache
 .prettierignore
 
+src/general/data
+
 **/ScheduleSitter*.js
 **/SupportSender*.js
 **/SupportSenderUI*.js

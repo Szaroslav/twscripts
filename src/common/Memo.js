@@ -1,117 +1,168 @@
-const _Memo = {
-    MAX_MEMO_SIZE: typeof char_limit === 'number' ? char_limit : 6e4,
-    MSG_DURATION: 1400,
-    createdMemoIds: [],
+function Memo(external) {
+    this.maxMemoSize   = typeof char_limit === 'number' ? char_limit : 6e4;
+    this.msgDurationMs = 1400;
 
-    create: function (schedule) {
+    this.external       = external;
+    this.tabs           = external.tabs;
+    this.maxNoTabs      = external.max_tabs;
+    this.isMobile       = external.mobile;
+
+    this.create = function (schedule) {
         const contents = this.splitSchedule(schedule);
 
         if (contents === null) {
-            UI.ErrorMessage('Nie udało się utworzyć rozpiski.', this.MSG_DURATION);
+            UI.ErrorMessage('Nie udało się utworzyć rozpiski.', this.msgDurationMs);
             return;
         }
-        UI.SuccessMessage('Tworzę rozpiskę, może to zająć kilka sekund.', this.MSG_DURATION);
+        UI.SuccessMessage('Tworzę rozpiskę, może to zająć kilka sekund.', this.msgDurationMs);
 
-        let p = $.Deferred().resolve();
+        const noAlreadyExistingMemos = this.tabs.length;
+
+        const deferreds = [];
         for (let i = 0; i < contents.length; i++) {
-            p = p
-                .then(() => Memo.addTab())
-                .then(() => this.renameTab(`Rozpiska [${i + 1}]`))
-                .then(() => this.setContent(contents[i]));
+            deferreds.push(this.addTab()
+                .then(addedTab => this.renameTab(addedTab.id, `Rozpiska [${i + 1}]`))
+                .then(()       => this.setContent(contents[i]))
+            );
         }
-        p.then(() => {
-            Memo.selectTab(this.createdMemoIds[0]);
-            UI.SuccessMessage('Rozpiska została utworzona. Odświeżam stronę.', this.MSG_DURATION);
-            setTimeout(() => location.reload(), this.MSG_DURATION + 600);
-        })
-    },
 
-    getSchedule: function (scheduleText, format) {
+        $.when(...deferreds).done((() => {
+            this.external.selectTab(this.tabs[noAlreadyExistingMemos].id);
+            UI.SuccessMessage(
+                'Rozpiska została utworzona. Odświeżam stronę.', this.msgDurationMs);
+            setTimeout(() => location.reload(), this.msgDurationMs + 600);
+        }).bind(this));
+    };
+
+    this.getSchedule = function (scheduleText, format) {
         if (format === 'text') {
             return scheduleText
                 .split('\n')
                 .filter(line => line !== '')
-                .filter(line => /^[0-9]{1,}./.test(line) || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line) || /Wyślij \w+\[\/url]$/.test(line))
+                .filter(line => /^[0-9]+./.test(line)
+                    || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
+                    || /Wyślij \w+\[\/url]$/.test(line))
                 .map(line => line + '\r\n');
         }
         else if (format === 'table') {
 
         }
-    },
+    };
 
-    addTab: function () {
-        if (Memo.tabs.length >= 10) {
-            UI.ErrorMessage(s(_("3531dec6f954a7d15f46b4cf644c5bfe"), Memo.tabs.length), this.MSG_DURATION);
-            return;
-        }
+    this.addTab = function () {
+        const handleResponse = (function (response, deferred) {
+            if (!response || !response.id) {
+                return;
+            }
+            if (this.tabs.push(response) >= this.maxNoTabs) {
+                $('#memo-add-tab-button').hide();
+            }
+            if ($('div.memo-tab').length === 0) {
+                location.reload();
+                return;
+            }
 
-        Memo.mobile && Memo.checkArrow(Memo.tabs.length);
+            const memoTab = $('div.memo-tab').first().clone();
+            this.external.editTabElement(memoTab, response.id, response.title, true);
+            memoTab.appendTo($('#tab-bar'));
+            $('.memo-tab-button-close').show();
+
+            const memoContainer = $('div.memo_container').first().clone(),
+                  memoId        = memoContainer.attr('id').substr(5);
+
+            memoContainer.attr('id', 'memo_' + response.id);
+            $('input[name="tab_id"]', memoContainer).val(response.id);
+            $('tr.show_row > td', memoContainer).empty();
+            $('textarea', memoContainer)
+                .val('')
+                .last()
+                .attr('id', 'message_' + response.id);
+            $('tr.bbcodes > td', memoContainer).empty();
+            memoContainer.insertAfter($('div.memo_container').last());
+
+            if (this.external.Memory.toggle[memoId]) {
+                const selectorOfMemoElements
+                    = '.show_row, .edit_link, .edit_row, .submit_row, .bbcodes';
+                $(selectorOfMemoElements, $('#memo_' + response.id)).toggle();
+            }
+
+            this.external.selectTab(response.id);
+
+            deferred.resolve(response);
+        }).bind(this);
+
+
+        return $.Deferred(deferred => {
+            const external = this.external;
+
+            if (this.tabs.length >= this.maxNoTabs) {
+                UI.ErrorMessage(s(
+                    _('3531dec6f954a7d15f46b4cf644c5bfe'),
+                    this.tabs.length
+                ));
+                deferred.reject();
+            }
+
+            TribalWars.post(
+                'memo',
+                { ajaxaction: 'add_tab' },
+                {},
+                response => handleResponse(response, deferred)
+            );
+
+            if (this.isMobile) {
+                external.checkArrow(this.tabs.length);
+            }
+            // return ArrayUtils.last(this.external.tabs);
+        });
+    };
+
+    this.renameTab = function (tabId, title) {
+        const handleSuccess = (function (response) {
+            const external = this.external;
+            const title    = response.title;
+            if (title) {
+                this.tabs[external.findTab(tabId)].title = title;
+                external.selectTab(tabId);
+            }
+        }).bind(this)
 
         return $.ajax({
-            url: $("#add_tab_url").val(),
-            type: "POST",
-            dataType: "json",
-            data: {},
-            success: function (e) {
-                if (e && e.id) {
-                    if ((Memo.tabs.push(e) >= Memo.max_tabs && $("#memo-add-tab-button").hide(), $("div.memo-tab").length >= 1)) var t = $("div.memo-tab").first().clone();
-                    else location.reload();
-                    Memo.editTabElement(t, e.id, e.title, !0), t.appendTo($("#tab-bar")), $(".memo-tab-button-close").show();
-                    var a = $("div.memo_container").first().clone(),
-                        o = a.attr("id").substr(5);
-                    a.attr("id", "memo_" + e.id),
-                        $("input[name='tab_id']", a).val(e.id),
-                        $("tr.show_row > td", a).empty(),
-                        $("textarea", a)
-                            .val("")
-                            .last()
-                            .attr("id", "message_" + e.id),
-                        $("tr.bbcodes > td", a).empty(),
-                        a.insertAfter($("div.memo_container").last()),
-                        Memo.Memory.toggle[o] && $(".show_row, .edit_link, .edit_row, .submit_row, .bbcodes", $("#memo_" + e.id)).toggle(),
-                        Memo.selectTab(e.id);
-                }
+            url:      $('#rename_tab_url').val(),
+            type:     'POST',
+            dataType: 'json',
+            data: {
+                id:       tabId,
+                newTitle: title
             },
-        }).then(res => this.createdMemoIds.push(res.id));
-    },
+        })
+            .done(handleSuccess);
+    };
 
-    renameTab: function (title) {
-        const memo = Memo.tabs[Memo.findTab(Memo.selectedTab)];
-        memo.title = title;
+    this.setContent = function (content) {
+        const selectedTab = this.external.selectedTab;
 
-        if (memo.title && memo.length > 16) {
-            UI.ErrorMessage(Memo.messages.tabNameLength, this.MSG_DURATION);
-        }
-        else if (title.length == 0) {
-            UI.ErrorMessage(Memo.messages.tabNameEmpty, this.MSG_DURATION);
-        }
-        else {
-            return $.ajax({
-                url: $("#rename_tab_url").val(),
-                type: "POST",
-                dataType: "json",
-                data: { id: memo.id, newTitle: memo.title },
-                success: function (e) {
-                    e.title && ((Memo.tabs[Memo.findTab(Memo.selectedTab)].title = e.title), Memo.selectTab()), Dialog.close();
-                }
-            });
-        }
-    },
+        $(`#message_${selectedTab}`).val(content);
+        const form = $(`#memo_${selectedTab} form`)[0];
+        const requestUrl = form.action;
+        const requestData = {
+            memo:   form.elements.memo.value,
+            tab_id: form.elements.tab_id.value,
+            h:      form.elements.h.value
+        };
 
-    setContent: function (content) {
-        document.querySelector(`#message_${Memo.selectedTab}`).value = content;
-        const form = document.querySelector(`#memo_${Memo.selectedTab} form`);
-        const requestData = {memo: form.elements.memo.value, tab_id: form.elements.tab_id.value, h: form.elements.h.value};
-
-        return $.ajax(form.action, {method: 'POST', data: requestData})
-            .then((res, status) => {
+        return $.ajax(requestUrl, { method: 'POST', data: requestData })
+            .then(((_, status) => {
                 if (status !== 'success') {
-                    UI.ErrorMessage('Nie udało się utworzyć rozpiski.', this.MSG_DURATION);
+                    UI.ErrorMessage(
+                        'Nie udało się utworzyć rozpiski.', this.msgDurationMs);
+                    throw new Error();
                 }
-            });
-    },
+            }).bind(this));
 
-    splitSchedule: function (schedule) {
+    };
+
+    this.splitSchedule = function (schedule) {
         if (schedule instanceof Array === false)
             return null;
 
@@ -121,7 +172,7 @@ const _Memo = {
 
         schedule.forEach(order => {
             const orderText = order.join('');
-            if (memoText.length + orderText.length + newLine.length > this.MAX_MEMO_SIZE) {
+            if (memoText.length + orderText.length + newLine.length > this.maxMemoSize) {
                 newSchedule.push(memoText);
                 memoText = '';
             }
@@ -132,7 +183,7 @@ const _Memo = {
         if (memoText !== '') newSchedule.push(memoText);
 
         return newSchedule;
-    }
+    };
 };
 
-export default _Memo;
+export default Memo;

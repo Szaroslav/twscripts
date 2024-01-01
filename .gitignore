@@ -21,6 +21,7 @@
 .eslintcache
 .prettierignore
 
+build
 src/general/data
 
 **/ScheduleSitter*.js

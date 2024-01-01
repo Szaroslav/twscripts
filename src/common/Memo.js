@@ -1,3 +1,9 @@
+/**
+ * Memo.js v0.7
+ * Szary (Plemiona: AGH Szary)
+ * GitHub: https://github.com/Szaroslav
+ */
+
 function Memo(external) {
     this.maxMemoSize   = typeof char_limit === 'number' ? char_limit : 6e4;
     this.msgDurationMs = 1400;

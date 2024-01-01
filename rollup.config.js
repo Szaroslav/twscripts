@@ -35,9 +35,13 @@ export default () => {
       commonjs({
         include: "node_modules/**"
       }),
-      // terser(),
       stripCode({
         pattern: bannerCommentRegExp
+      }),
+      terser({
+        format: {
+          comments: /^\*\n\s*\*\s[A-Za-z0-9_-]+\.(c|m)?(j|t)sx?/
+        }
       }),
       handlebars()
     ]

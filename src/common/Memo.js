@@ -119,7 +119,6 @@ function Memo(external) {
             if (this.isMobile) {
                 external.checkArrow(this.tabs.length);
             }
-            // return ArrayUtils.last(this.external.tabs);
         });
     };
 

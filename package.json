@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "dev": "rollup -c -w --dev"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.3",
@@ -13,6 +14,7 @@
   "dependencies": {
     "glob": "^10.3.4",
     "js-tokens": "^8.0.2",
+    "lodash": "^4.17.21",
     "mri": "^1.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-handlebars-plus": "^0.4.2",

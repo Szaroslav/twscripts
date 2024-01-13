@@ -13,7 +13,7 @@ function Memo(external) {
     this.maxNoTabs      = external.max_tabs;
     this.isMobile       = external.mobile;
 
-    this.create = async function (schedule) {
+    this.create = function (schedule) {
         const contents = this.splitSchedule(schedule);
 
         if (contents === null) {
@@ -24,16 +24,20 @@ function Memo(external) {
 
         const noAlreadyExistingMemos = this.tabs.length;
 
+        const deferreds = [];
         for (let i = 0; i < contents.length; i++) {
-            const tab = await this.addTab();
-            await this.renameTab(tab.id, `Rozpiska [${i + 1}]`);
-            await this.setContent(contents[i]);
+            deferreds.push(this.addTab()
+                .then(addedTab => this.renameTab(addedTab.id, `Rozpiska [${i + 1}]`))
+                .then(()       => this.setContent(contents[i]))
+            );
         }
 
-        this.external.selectTab(this.tabs[noAlreadyExistingMemos].id);
-        UI.SuccessMessage(
-            'Rozpiska została utworzona. Odświeżam stronę.', this.msgDurationMs);
-        setTimeout(() => location.reload(), this.msgDurationMs + 600);
+        $.when(...deferreds).done((() => {
+            this.external.selectTab(this.tabs[noAlreadyExistingMemos].id);
+            UI.SuccessMessage(
+                'Rozpiska została utworzona. Odświeżam stronę.', this.msgDurationMs);
+            setTimeout(() => location.reload(), this.msgDurationMs + 600);
+        }).bind(this));
     };
 
     this.getSchedule = function (scheduleText, format) {

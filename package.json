@@ -1,18 +1,21 @@
 {
   "type": "module",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "dev": "rollup -c -w --dev"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.3",
     "rollup": "^3.29.1",
     "rollup-plugin-ascii": "^0.0.3",
+    "rollup-plugin-banner": "^0.2.1",
     "rollup-plugin-strip-code": "^0.2.7",
     "terser-webpack-plugin": "^5.3.9"
   },
   "dependencies": {
     "glob": "^10.3.4",
     "js-tokens": "^8.0.2",
+    "lodash": "^4.17.21",
     "mri": "^1.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-handlebars-plus": "^0.4.2",

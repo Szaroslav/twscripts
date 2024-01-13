@@ -37,7 +37,7 @@ export default args => {
       return _.merge(baseConfiguration, developmentConfig);
     }
     else {
-      return _.merge(baseConfiguration, productionConfig);
+      return _.merge(baseConfiguration, productionConfig(`${filename}.js`));
     }
   });
 };

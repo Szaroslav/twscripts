@@ -55,7 +55,8 @@ const ScheduleMerger = {
                 .map(line => line + '\r\n');
 
             let step = 4;
-            if (this.settings.scheduleFormat === 'oldExtendedText') {
+            const scheduleFormat = this.settings.scheduleFormat
+            if (scheduleFormat === 'oldExtendedText' || scheduleFormat === 'basicText') {
                 step = 3;
             }
 
@@ -76,25 +77,29 @@ const ScheduleMerger = {
     },
 
     filterSchedule: function (scheduleText) {
-        if (this.settings.scheduleFormat === 'extendedText') {
-            return scheduleText
-                .split('\n')
-                .filter(line => line !== '')
-                .filter(line => /^[0-9]+\./.test(line)
-                    || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
-                    || /^[0-9]{3}\|[0-9]{3}.*?[0-9]{3}\|[0-9]{3}$/.test(line)
-                    || /^\[url=.*?\]Wyślij.*?\[\/url\]$/.test(line));
-        }
-        else if (this.settings.scheduleFormat === 'oldExtendedText') {
-            return scheduleText
-                .split('\n')
-                .filter(line => line !== '')
-                .filter(line => /^[0-9]+\./.test(line)
-                    || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
-                    || /Wyślij \w+\[\/url]$/.test(line));
-        }
-        else if (this.settings.scheduleFormat === 'table') {
-            // TODO
+        switch (this.settings.scheduleFormat) {
+            case 'extendedText':
+            case 'sittersText': {
+                return scheduleText
+                    .split('\n')
+                    .filter(line => line !== '')
+                    .filter(line => /^[0-9]+\./.test(line)
+                        || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
+                        || /^[0-9]{3}\|[0-9]{3}.*?[0-9]{3}\|[0-9]{3}$/.test(line)
+                        || /^\[url=.*?\]Wyślij.*?\[\/url\]$/.test(line));
+            }
+            case 'basicText':
+            case 'oldExtendedText': {
+                return scheduleText
+                    .split('\n')
+                    .filter(line => line !== '')
+                    .filter(line => /^[0-9]+\./.test(line)
+                        || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
+                        || /Wyślij \w+\[\/url]$/.test(line));
+            }
+            case 'table': {
+                // TODO
+            }
         }
     },
 };

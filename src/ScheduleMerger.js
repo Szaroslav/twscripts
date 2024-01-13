@@ -15,6 +15,10 @@ import GreyMemo from "./common/Memo.js";
 const ScheduleMerger = {
     MSG_DURATION: 1400,
     memo: null,
+    baseSettings: {
+        scheduleFormat: 'extendedText',
+    },
+    settings: {},
 
     init: function () {
         console.log('%cScheduleMerger.js %cv0.9.1', 'display: inline-block; padding: 4px 0', 'display: inline-block; padding: 4px; background-color: #2151ae; color: white');
@@ -23,6 +27,14 @@ const ScheduleMerger = {
         if (typeof Memo !== 'undefined') {
             this.memo = new GreyMemo(Memo);
             this.MSG_DURATION = this.memo.msgDurationMs;
+
+            const s = window.settings;
+            if (!s || !s.scheduleFormat) {
+                this.settings.scheduleFormat = this.baseSettings.scheduleFormat;
+            }
+            else {
+                this.settings.scheduleFormat = s.scheduleFormat;
+            }
 
             const schedule = this.getSchedule();
 
@@ -39,10 +51,17 @@ const ScheduleMerger = {
         const memoElements = document.querySelectorAll('.memo_container');
 
         memoElements.forEach(memoElement => {
-            const d = this.memo.getSchedule(memoElement.querySelector('textarea[name="memo"]').value, 'text');
-            for (let i = 0; i < d.length; i += 3) {
-                if (i + 2 >= d.length) return;
-                schedule.push([d[i], d[i + 1], d[i + 2]]);
+            const filteredSchedule = this.filterSchedule(memoElement.querySelector('textarea[name="memo"]').value)
+                .map(line => line + '\r\n');
+
+            let step = 4;
+            if (this.settings.scheduleFormat === 'oldExtendedText') {
+                step = 3;
+            }
+
+            for (let i = 0; i < filteredSchedule.length; i += step) {
+                if (i + step - 1 >= filteredSchedule.length) return;
+                schedule.push(filteredSchedule.slice(i, i + step));
             }
         });
 
@@ -51,10 +70,33 @@ const ScheduleMerger = {
             const dateB = new Date(`${b[1].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)}T${b[1].match(/[0-9]{2}:[0-9]{2}:[0-9]{2}/)}`);
             return dateA - dateB;
         });
-        schedule.forEach((order, i) => order[0] = order[0].replace(/^[0-9]{1,}./, `${i + 1}.`))
+        schedule.forEach((order, i) => order[0] = order[0].replace(/^[0-9]{1,}\./, `${i + 1}.`))
 
         return schedule;
-    }
+    },
+
+    filterSchedule: function (scheduleText) {
+        if (this.settings.scheduleFormat === 'extendedText') {
+            return scheduleText
+                .split('\n')
+                .filter(line => line !== '')
+                .filter(line => /^[0-9]+\./.test(line)
+                    || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
+                    || /^[0-9]{3}\|[0-9]{3}.*?[0-9]{3}\|[0-9]{3}$/.test(line)
+                    || /^\[url=.*?\]Wyślij.*?\[\/url\]$/.test(line));
+        }
+        else if (this.settings.scheduleFormat === 'oldExtendedText') {
+            return scheduleText
+                .split('\n')
+                .filter(line => line !== '')
+                .filter(line => /^[0-9]+\./.test(line)
+                    || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
+                    || /Wyślij \w+\[\/url]$/.test(line));
+        }
+        else if (this.settings.scheduleFormat === 'table') {
+            // TODO
+        }
+    },
 };
 
 ScheduleMerger.init();

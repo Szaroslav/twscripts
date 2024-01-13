@@ -1,5 +1,5 @@
 /**
- * Memo.js v0.7
+ * Memo.js v0.8
  * Szary (Plemiona: AGH Szary)
  * GitHub: https://github.com/Szaroslav
  */
@@ -13,7 +13,7 @@ function Memo(external) {
     this.maxNoTabs      = external.max_tabs;
     this.isMobile       = external.mobile;
 
-    this.create = function (schedule) {
+    this.create = async function (schedule) {
         const contents = this.splitSchedule(schedule);
 
         if (contents === null) {
@@ -24,20 +24,16 @@ function Memo(external) {
 
         const noAlreadyExistingMemos = this.tabs.length;
 
-        const deferreds = [];
         for (let i = 0; i < contents.length; i++) {
-            deferreds.push(this.addTab()
-                .then(addedTab => this.renameTab(addedTab.id, `Rozpiska [${i + 1}]`))
-                .then(()       => this.setContent(contents[i]))
-            );
+            const tab = await this.addTab();
+            await this.renameTab(tab.id, `Rozpiska [${i + 1}]`);
+            await this.setContent(contents[i]);
         }
 
-        $.when(...deferreds).done((() => {
-            this.external.selectTab(this.tabs[noAlreadyExistingMemos].id);
-            UI.SuccessMessage(
-                'Rozpiska została utworzona. Odświeżam stronę.', this.msgDurationMs);
-            setTimeout(() => location.reload(), this.msgDurationMs + 600);
-        }).bind(this));
+        this.external.selectTab(this.tabs[noAlreadyExistingMemos].id);
+        UI.SuccessMessage(
+            'Rozpiska została utworzona. Odświeżam stronę.', this.msgDurationMs);
+        setTimeout(() => location.reload(), this.msgDurationMs + 600);
     };
 
     this.getSchedule = function (scheduleText, format) {

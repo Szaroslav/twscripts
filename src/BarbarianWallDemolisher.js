@@ -79,7 +79,7 @@ const BarbarianWallDemolisher = {
         // Find the button and add onclick event handler function
         // to remove a row after sending the attack.
         this.observer = new MutationObserver(this.handleDocumentChange.bind(this));
-        this.observer.observe(document.body, { childList: true, subtree: true }); 
+        this.observer.observe(document.body, { childList: true, subtree: true });
       }
 
       const plunderList = $("#plunder_list")[0].rows;
@@ -126,7 +126,7 @@ const BarbarianWallDemolisher = {
     if (i < 2) {
       return;
     }
-    
+
     const dotImage = row.cells[1].querySelector("img");
     // Estaminate level of wall, based on respectively:
     // - spotted level;
@@ -147,23 +147,24 @@ const BarbarianWallDemolisher = {
 
     if (wallLevel > 0 || needToScan) {
       const sendManuallyCommandCell = row.cells[row.cells.length - 1];
+      const target = sendManuallyCommandCell.getElementsByTagName("a")[0].href.split("target=")[1];
       const commonCommandParameters = {
-        target_village_id: sendManuallyCommandCell.getElementsByTagName("a")[0].href.split("target=")[1],
-        from:              "simulator"
+        target,
+        from: "simulator",
       };
       let unitsCommandParameters = {
-        att_axe:           0,
-        att_spy:           1,
-        att_light:         0,
-        att_ram:           0
+        axe:     0,
+        spy:     1,
+        light:   0,
+        ram:     0,
       };
       if (!needToScan) {
         const templates = this.settings.templates;
         unitsCommandParameters = {
-          att_axe:         templates[wallLevel]["axes"],
-          att_spy:         templates[wallLevel]["scouts"],
-          att_light:       templates[wallLevel]["lights"],
-          att_ram:         templates[wallLevel]["rams"]
+          axe:   templates[wallLevel]["axes"],
+          spy:   templates[wallLevel]["scouts"],
+          light: templates[wallLevel]["lights"],
+          ram:   templates[wallLevel]["rams"],
         };
       }
       const commandParameters = { ...commonCommandParameters, ...unitsCommandParameters };
@@ -186,7 +187,7 @@ const BarbarianWallDemolisher = {
       event.preventDefault();
       CommandPopup.openRallyPoint(parameters);
     }
-    
+
     if (this.settings.hideOnClick) {
       this.activeRow = row;
     }

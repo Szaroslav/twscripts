@@ -1,8 +1,8 @@
 /**
  * ScheduleMerger.js v0.9.2
  * Szary (Plemiona: AGH Szary)
- * GitHub: https://github.com/Szaroslav
- * Repozytorium: https://github.com/Szaroslav/twscripts
+ * GitHub:       https://github.com/Szaroslav
+ * Kod źródłowy: https://github.com/Szaroslav/twscripts
  *
  * Skrypt łączący kilka rozpisek z plemiona-planer.pl w jedną,
  * sortujący od najwcześniejszych do najpóźniejszych rozkazów,
@@ -28,7 +28,7 @@ const ScheduleMerger = {
     settings: {},
 
     init: function () {
-        console.log('%cScheduleMerger.js %cv0.9.1', 'display: inline-block; padding: 4px 0', 'display: inline-block; padding: 4px; background-color: #2151ae; color: white');
+        console.log('%cScheduleMerger.js %cv0.9.2', 'display: inline-block; padding: 4px 0', 'display: inline-block; padding: 4px; background-color: #2151ae; color: white');
         console.log('Skrypt stworzony przez %cSzary %c(Plemiona: %cAGH Szary%c)', 'font-weight: bold', 'font-weight: normal', 'font-weight: bold', 'font-weight: normal');
 
         if (typeof Memo !== 'undefined') {

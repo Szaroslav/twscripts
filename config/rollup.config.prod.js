@@ -23,7 +23,11 @@ const bannerComment = path => {
 
 export default filename => defineConfig({
   plugins: [
-    terser(),
+    terser({
+      format: {
+        ascii_only: true,
+      }
+    }),
     banner(bannerComment(`./src/${filename}`)),
   ],
 });

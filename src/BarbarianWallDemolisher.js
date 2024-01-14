@@ -61,8 +61,9 @@ const BarbarianWallDemolisher = {
   //    Nie edytuj zawartości poniżej    //
   /////////////////////////////////////////
   version:   "v1.1",
-  observer:  null,
-  activeRow: null,
+  observer:                  null,
+  activeRow:                 null,
+  attackConfirmationHandler: null,
 
   exec() {
     // Verify, if user is in the Loot Assitant panel.
@@ -108,17 +109,16 @@ const BarbarianWallDemolisher = {
   },
 
   handleDocumentChange(mutationNodeList, observer) {
-    // Hide the row right after clicking the attack confirmation button. 
-    let confirmAttackButton = $("#troop_confirm_submit")[0];
-    if (confirmAttackButton) {
+    // Hide the row right after clicking the attack confirmation button.
+    const confirmAttackButton = $("#troop_confirm_submit")[0];
+    if (confirmAttackButton && !this.attackConfirmationHandler) {
       const row = this.activeRow;
-      confirmAttackButton.onclick = () => row.style.display = "none";
-    }
-
-    // Remove active row after closing the popup.
-    const popupCommand = $("#popup_box_popup_command")[0]; 
-    if (!popupCommand) {
-      this.activeRow = null;
+      const handleConfirmation = () => {
+        row.style.display = "none";
+        this.activeRow = null;
+      };
+      this.attackConfirmationHandler = handleConfirmation;
+      confirmAttackButton.addEventListener("click", handleConfirmation, { once: true });
     }
   },
 

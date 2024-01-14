@@ -1,15 +1,15 @@
 /**
- * BarbarianWallDemolisher.js v1.1
+ * BarbarianWallDemolisher.js v1.1.1
  * Szary (Plemiona: AGH Szary) i howcio
  * GitHub:       https://github.com/Szaroslav
  * Kod źródłowy: https://github.com/Szaroslav/twscripts
- * 
+ *
  * Zmodyfikowany i rozbudowany skrypt napisany przez howcio.
  * Umożliwia wysyłanie ataków burzących, za pomocą przycisku placu w panelu Asystenta Farmera.
  * Skrypt analizuje ostatnie raporty znajdujące się w Asystencie Farmera pod kątem 3 aspektów:
- * - poziom muru wykryty przez zwiadowców;
- * - częściowe straty (żółta kropka);
- * - pełne straty (czerwona kropka).
+ *   - poziom muru wykryty przez zwiadowców;
+ *   - częściowe straty (żółta kropka);
+ *   - pełne straty (czerwona kropka).
  */
 
 const BarbarianWallDemolisher = {
@@ -60,7 +60,7 @@ const BarbarianWallDemolisher = {
   /////////////////////////////////////////
   //    Nie edytuj zawartości poniżej    //
   /////////////////////////////////////////
-  version:   "v1.1",
+  version:                   "v1.1.1",
   observer:                  null,
   activeRow:                 null,
   attackConfirmationHandler: null,

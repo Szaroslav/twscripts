@@ -150,7 +150,6 @@ const BarbarianWallDemolisher = {
       const target = sendManuallyCommandCell.getElementsByTagName("a")[0].href.split("target=")[1];
       const commonCommandParameters = {
         target,
-        from: "simulator",
       };
       let unitsCommandParameters = {
         axe:     0,
@@ -171,7 +170,7 @@ const BarbarianWallDemolisher = {
 
       const commandButton   = sendManuallyCommandCell.getElementsByTagName("a")[0];
       commandButton.removeAttribute("onclick");
-      commandButton.href   += $.param(commandParameters);
+      commandButton.href   += `&${$.param(unitsCommandParameters)}`;
       commandButton.onclick = this.handleCommandClick.bind(this, commandParameters, row);
     }
     else {

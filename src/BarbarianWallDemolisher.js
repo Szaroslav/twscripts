@@ -1,37 +1,36 @@
 /**
  * BarbarianWallDemolisher.js v1.1.1
- * Szary (Plemiona: AGH Szary) i howcio
- * GitHub:       https://github.com/Szaroslav
- * Kod źródłowy: https://github.com/Szaroslav/twscripts
+ * Szary (Plemiona: AGH Szary) and howcio
+ * GitHub:      https://github.com/Szaroslav
+ * Source code: https://github.com/Szaroslav/twscripts
  *
- * Zmodyfikowany i rozbudowany skrypt napisany przez howcio.
- * Umożliwia wysyłanie ataków burzących, za pomocą przycisku placu w panelu Asystenta Farmera.
- * Skrypt analizuje ostatnie raporty znajdujące się w Asystencie Farmera pod kątem 3 aspektów:
- *   - poziom muru wykryty przez zwiadowców;
- *   - częściowe straty (żółta kropka);
- *   - pełne straty (czerwona kropka).
+ * Modified and extended script written by howcio.
+ * Allows sending the demolishing attack commands
+ * via rally point button in the Loot Assistant panel.
+ * Script bases on the recent reports located in the Loot Assistant panel,
+ * it evaluates or estimates level of the wall relying on 3 conditions:
+ * - level of the wall spotted by scouts;
+ * - partial losses (yellow dot);
+ * - full losses (red dot).
  */
 
-const BarbarianWallDemolisher = {
+class BarbarianWallDemolisher {
 
-  // Modyfikowalne ustawienia skryptu
-  baseSettings: {
-    // Ukrywanie wiosek bez murków do zbicia [true/false]
+  // Base of the user customisable settings
+  baseSettings = {
+    // Hide all villages without built wall [true/false]
     hideOthers:          true,
-    // Ukrywanie wiosek po wysłaniu ataku [true/false]
+    // Hide a village after sending the command [true/false]
     hideOnClick:         true,
-    // Wyłącznie skanowanie wioski [true/false],
-    // jeśli nie mamy informacji o wiosce (nadpisuje opcję z żółtą i czerwoną kropką)
+    // Only scan [true/false],
+    // if don't have any information about a village
+    // (overwrites yellow and red dot setting)
     scanIfNoInformation: false,
-    // Zakładany poziom muru, jeśli atak poniósł częściowe straty (żółta kropka)
+    // Assumed level of the wall, if the attack suffered partial losses (yellow dot)
     yellowDotWallLevel:  1,
-    // Zakładany poziom muru, jeśli atak poniósł całkowite straty (czerwona kropka)
+    // Assumed level of the wall, if the attack suffered full losses (red dot)
     redDotWallLevel:     1,
-    // Szablony wojsk na poszczególne poziomy murów
-    // axes   - topornicy
-    // scouts - zwiadowcy
-    // lights - lekka
-    // rams   - tarany
+    // Templates of troops per wall level
     templates: {
       1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2  },
       2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4  },
@@ -52,29 +51,24 @@ const BarbarianWallDemolisher = {
       17: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
       18: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
       19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  }
+      20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
     }
-  },
-  settings: {},
+  }
+  settings = {}
 
-  /////////////////////////////////////////
-  //    Nie edytuj zawartości poniżej    //
-  /////////////////////////////////////////
-  version:                   "v1.1.1",
-  observer:                  null,
-  activeRow:                 null,
-  attackConfirmationHandler: null,
+  version                   = "v1.1.1"
+  gameData                  = game_data ?? { screen: undefined }
+  observer                  = null
+  activeRow                 = null
+  attackConfirmationHandler = null
+
+  constructor(settings = {}) {
+    this.initSettings(settings);
+  }
 
   exec() {
     // Verify, if user is in the Loot Assitant panel.
-    if (game_data.screen === "am_farm") {
-      if (typeof userSettings !== "undefined") {
-        this.initSettings(userSettings);
-      }
-      else {
-        this.initSettings({});
-      }
-
+    if (this.gameData.screen === "am_farm") {
       if (this.settings.hideOnClick) {
         // Observe the DOM, whenever it changes.
         // Find the button and add onclick event handler function
@@ -93,7 +87,7 @@ const BarbarianWallDemolisher = {
         UI.ErrorMessage("Nie jesteś w panelu Asystenta Farmera", 3000, null, null);
       }
     }
-  },
+  }
 
   initSettings(settings) {
     for (const prop in this.baseSettings) {
@@ -106,7 +100,7 @@ const BarbarianWallDemolisher = {
     for (const wallLevel in templates) {
       this.settings.templates[wallLevel] = this.settings.templates[wallLevel] ?? templates[wallLevel];
     }
-  },
+  }
 
   handleDocumentChange(mutationNodeList, observer) {
     // Hide the row right after clicking the attack confirmation button.
@@ -120,7 +114,7 @@ const BarbarianWallDemolisher = {
       this.attackConfirmationHandler = handleConfirmation;
       confirmAttackButton.addEventListener("click", handleConfirmation, { once: true });
     }
-  },
+  }
 
   handlePlunderRow(i, row) {
     if (i < 2) {
@@ -178,7 +172,7 @@ const BarbarianWallDemolisher = {
         row.style.display = "none";
       }
     }
-  },
+  }
 
   handleCommandClick(parameters, row, event) {
     if (!event.ctrlKey && !event.shiftKey) {
@@ -192,6 +186,6 @@ const BarbarianWallDemolisher = {
     }
   }
 
-};
+}
 
-BarbarianWallDemolisher.exec();
+new BarbarianWallDemolisher(window.userSettings ?? {}).exec();

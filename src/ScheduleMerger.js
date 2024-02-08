@@ -1,59 +1,62 @@
 /**
  * ScheduleMerger.js v0.9.2
  * Szary (Plemiona: AGH Szary)
- * GitHub:       https://github.com/Szaroslav
- * Kod źródłowy: https://github.com/Szaroslav/twscripts
+ * GitHub:      https://github.com/Szaroslav
+ * Source code: https://github.com/Szaroslav/twscripts
  *
- * Skrypt łączący kilka rozpisek z plemiona-planer.pl w jedną,
- * sortujący od najwcześniejszych do najpóźniejszych rozkazów,
- * jeśli rozpiska jest zbyt duża, skrypt dzieli je na kilka notatek.
- * Dopuszczalne formaty rozpisek:
- *   - tekst prosty,
- *   - (nowy) tekst rozszerzony,
- *   - stary tekst rozszerzony,
- *   - dla zastąpcy.
- * Skrypt aktualnie nie obsługuje tabel.
+ * Merges several schedules from plemiona-planer.pl into single one,
+ * if characters limit allows, otherwise number of memos is appropriately greater.
+ * Sorts by sending date of commands in the ascending order.
+ *
+ * Acceptable formats of scheduls:
+ *   - basic text,
+ *   - (new) extended text,
+ *   - old extended text,
+ *   - sitter's text.
+ * The script currently doesn't support a table format.
  */
 
 import GreyMemo from "./common/Memo.js";
 
-(function () {
+class ScheduleMerger {
 
-const ScheduleMerger = {
-    MSG_DURATION: 1400,
-    memo: null,
-    baseSettings: {
+    MSG_DURATION = 1400
+    memo         = null
+    baseSettings = {
         scheduleFormat: 'extendedText',
-    },
-    settings: {},
+    }
+    settings = {}
 
-    init: function () {
-        console.log('%cScheduleMerger.js %cv0.9.2', 'display: inline-block; padding: 4px 0', 'display: inline-block; padding: 4px; background-color: #2151ae; color: white');
-        console.log('Skrypt stworzony przez %cSzary %c(Plemiona: %cAGH Szary%c)', 'font-weight: bold', 'font-weight: normal', 'font-weight: bold', 'font-weight: normal');
+    constructor(settings = {}) {
+        this.settings.scheduleFormat = settings.scheduleFormat
+            ?? this.baseSettings.scheduleFormat;
+    }
+
+    exec() {
+        console.log(
+            '%cScheduleMerger.js %cv0.9.2',
+            'display: inline-block; padding: 4px 0',
+            'display: inline-block; padding: 4px; background-color: #2151ae; color: white');
+        console.log(
+            'Skrypt stworzony przez %cSzary %c(Plemiona: %cAGH Szary%c)',
+            'font-weight: bold',
+            'font-weight: normal',
+            'font-weight: bold',
+            'font-weight: normal');
 
         if (typeof Memo !== 'undefined') {
             this.memo = new GreyMemo(Memo);
             this.MSG_DURATION = this.memo.msgDurationMs;
-
-            const s = window.settings;
-            if (!s || !s.scheduleFormat) {
-                this.settings.scheduleFormat = this.baseSettings.scheduleFormat;
-            }
-            else {
-                this.settings.scheduleFormat = s.scheduleFormat;
-            }
-
             const schedule = this.getSchedule();
-
             this.memo.create(schedule);
         }
         else {
             UI.ErrorMessage('Nie jesteś w notatkach. Przenoszę.');
             setTimeout(() => location.href = `${location.origin}/game.php?screen=memo`, this.MSG_DURATION + 600);
         }
-    },
+    }
 
-    getSchedule: function () {
+    getSchedule() {
         const schedule = [];
         const memoElements = document.querySelectorAll('.memo_container');
 
@@ -81,9 +84,9 @@ const ScheduleMerger = {
         schedule.forEach((order, i) => order[0] = order[0].replace(/^[0-9]{1,}\./, `${i + 1}.`))
 
         return schedule;
-    },
+    }
 
-    filterSchedule: function (scheduleText) {
+    filterSchedule(scheduleText) {
         switch (this.settings.scheduleFormat) {
             case 'extendedText':
             case 'sittersText': {
@@ -108,9 +111,8 @@ const ScheduleMerger = {
                 // TODO
             }
         }
-    },
-};
+    }
 
-ScheduleMerger.init();
+}
 
-})();
+new ScheduleMerger(window.settings ?? {}).exec();

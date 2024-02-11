@@ -79,7 +79,7 @@ class BarbarianWallDemolisher {
 
       const plunderList = $("#plunder_list")[0].rows;
       for (let i = 0; i < plunderList.length; i++) {
-        this.handlePlunderRow(i, plunderList[i]);
+        this.processPlunderRow(i, plunderList[i]);
       }
     }
     else {
@@ -116,7 +116,7 @@ class BarbarianWallDemolisher {
     }
   }
 
-  handlePlunderRow(i, row) {
+  processPlunderRow(i, row) {
     if (i < 2) {
       return;
     }
@@ -140,40 +140,44 @@ class BarbarianWallDemolisher {
     const needToScan = this.settings.scanIfNoInformation && (isYellow || isRed);
 
     if (wallLevel > 0 || needToScan) {
-      const sendManuallyCommandCell = row.cells[row.cells.length - 1];
-      const target = sendManuallyCommandCell.getElementsByTagName("a")[0].href.split("target=")[1];
-      const commonCommandParameters = {
-        target,
-      };
-      let unitsCommandParameters = {
-        axe:      0,
-        spy:      1,
-        light:    0,
-        ram:      0,
-        catapult: 0,
-      };
-      if (!needToScan) {
-        const templates = this.settings.templates;
-        unitsCommandParameters = {
-          axe:      templates[wallLevel].axes,
-          spy:      templates[wallLevel].scouts,
-          light:    templates[wallLevel].lights,
-          ram:      templates[wallLevel].rams,
-          catapult: templates[wallLevel].catapults,
-        };
-      }
-      const commandParameters = { ...commonCommandParameters, ...unitsCommandParameters };
-
-      const commandButton   = sendManuallyCommandCell.getElementsByTagName("a")[0];
-      commandButton.removeAttribute("onclick");
-      commandButton.href   += `&${$.param(unitsCommandParameters)}`;
-      commandButton.onclick = this.handleCommandClick.bind(this, commandParameters, row);
+      this.addHandlerToCommandButton(row, wallLevel, needToScan);
     }
     else {
       if (this.settings.hideOthers) {
         row.style.display = "none";
       }
     }
+  }
+
+  addHandlerToCommandButton(row, wallLevel, needToScan) {
+    const sendManuallyCommandCell = row.cells[row.cells.length - 1];
+    const target = sendManuallyCommandCell.getElementsByTagName("a")[0].href.split("target=")[1];
+    const commonCommandParameters = {
+      target,
+    };
+    let unitsCommandParameters = {
+      axe:      0,
+      spy:      1,
+      light:    0,
+      ram:      0,
+      catapult: 0,
+    };
+    if (!needToScan) {
+      const templates = this.settings.templates;
+      unitsCommandParameters = {
+        axe:      templates[wallLevel].axes,
+        spy:      templates[wallLevel].scouts,
+        light:    templates[wallLevel].lights,
+        ram:      templates[wallLevel].rams,
+        catapult: templates[wallLevel].catapults,
+      };
+    }
+    const commandParameters = { ...commonCommandParameters, ...unitsCommandParameters };
+
+    const commandButton   = sendManuallyCommandCell.getElementsByTagName("a")[0];
+    commandButton.removeAttribute("onclick");
+    commandButton.href   += `&${$.param(unitsCommandParameters)}`;
+    commandButton.onclick = this.handleCommandClick.bind(this, commandParameters, row);
   }
 
   handleCommandClick(parameters, row, event) {

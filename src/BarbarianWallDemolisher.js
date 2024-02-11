@@ -1,5 +1,5 @@
 /**
- * BarbarianWallDemolisher.js v1.1.1
+ * BarbarianWallDemolisher.js v1.2
  * Szary (Plemiona: AGH Szary) and howcio
  * GitHub:      https://github.com/Szaroslav
  * Source code: https://github.com/Szaroslav/twscripts
@@ -32,31 +32,31 @@ class BarbarianWallDemolisher {
     redDotWallLevel:     1,
     // Templates of troops per wall level
     templates: {
-      1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2  },
-      2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4  },
-      3:  { "axes": 10, "scouts": 1, "lights": 8,  "rams": 8  },
-      4:  { "axes": 15, "scouts": 1, "lights": 15, "rams": 10 },
-      5:  { "axes": 25, "scouts": 1, "lights": 20, "rams": 15 },
-      6:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      7:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      8:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      9:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      10: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      11: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      12: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      13: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      14: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      15: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      16: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      17: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      18: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
-      20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0  },
+      1:  { "axes": 10, "scouts": 1, "lights": 2,  "rams": 2,  "catapults": 0 },
+      2:  { "axes": 10, "scouts": 1, "lights": 4,  "rams": 4,  "catapults": 0 },
+      3:  { "axes": 10, "scouts": 1, "lights": 8,  "rams": 8,  "catapults": 0 },
+      4:  { "axes": 15, "scouts": 1, "lights": 15, "rams": 10, "catapults": 0 },
+      5:  { "axes": 25, "scouts": 1, "lights": 20, "rams": 15, "catapults": 0 },
+      6:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      7:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      8:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      9:  { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      10: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      11: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      12: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      13: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      14: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      15: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      16: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      17: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      18: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
+      20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
     }
   }
   settings = {}
 
-  version                   = "v1.1.1"
+  version                   = "v1.2"
   gameData                  = game_data ?? { screen: undefined }
   observer                  = null
   activeRow                 = null
@@ -146,18 +146,20 @@ class BarbarianWallDemolisher {
         target,
       };
       let unitsCommandParameters = {
-        axe:     0,
-        spy:     1,
-        light:   0,
-        ram:     0,
+        axe:      0,
+        spy:      1,
+        light:    0,
+        ram:      0,
+        catapult: 0,
       };
       if (!needToScan) {
         const templates = this.settings.templates;
         unitsCommandParameters = {
-          axe:   templates[wallLevel]["axes"],
-          spy:   templates[wallLevel]["scouts"],
-          light: templates[wallLevel]["lights"],
-          ram:   templates[wallLevel]["rams"],
+          axe:      templates[wallLevel].axes,
+          spy:      templates[wallLevel].scouts,
+          light:    templates[wallLevel].lights,
+          ram:      templates[wallLevel].rams,
+          catapult: templates[wallLevel].catapults,
         };
       }
       const commandParameters = { ...commonCommandParameters, ...unitsCommandParameters };

@@ -190,4 +190,4 @@ class BarbarianWallDemolisher {
 
 }
 
-new BarbarianWallDemolisher(window.userSettings ?? {}).exec();
+new BarbarianWallDemolisher(window.settings || window.userSettings).exec();

@@ -117,4 +117,14 @@ class Units {
   save() {
     localStorage.setItem("jsUnits:data", JSON.stringify(this.data));
   }
+
+  load() {
+    try {
+      this.data = JSON.parse(localStorage.getItem("jsUnits:data"));
+    }
+    catch {
+      // Invalid JSON, set data to undefined.
+      this.data = undefined;
+    }
+  }
 }

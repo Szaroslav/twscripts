@@ -1,57 +1,65 @@
 import Units from "./common/Units";
 
-(async function () {
+class SupportManager {
 
-  const units = new Units({ cache: 86_400 });
-  await units.load();
-  units.data.spy.population = 0;
+  #units = new Units({ cache: 86_400 });
+  #namesAndColumnIndexesMap;
 
-  const urlQuery = parseUrlSearchQuery();
-  const columnIndexesToNamesMap = mapTableColumnIndexesToNames();
-  const namesToColumnIndexesMap = mapNamesToTableColumnIndexes(columnIndexesToNamesMap);
-  const namesAndColumnIndexesMap = { ...columnIndexesToNamesMap, ...namesToColumnIndexesMap };
-
-  const supportInVillagesByPlayer = {};
-  const supportRows = document.querySelectorAll("#units_table tbody > tr");
-  let currentVillageName = null;
-  for (const supportRow of supportRows) {
-    if (supportRow.classList.contains("units_away")) {
-      currentVillageName = getVillageName(supportRow);
-    }
-    else {
-      const playerName = getPlayerName(supportRow);
-      if (!supportInVillagesByPlayer[currentVillageName]) {
-        supportInVillagesByPlayer[currentVillageName] = {};
-      }
-      if (!supportInVillagesByPlayer[currentVillageName][playerName]) {
-        supportInVillagesByPlayer[currentVillageName][playerName] = {};
-      }
-
-      updateSupportUnitsOfVillageAndPlayer(
-        supportInVillagesByPlayer[currentVillageName][playerName],
-        supportRow
-      );
-    }
+  async init() {
+    await this.#units.load();
+    return this;
   }
 
-  const filteredSupportInVillagesByPlayer = {};
-  const playerNames = [ "Goliash77" ];
-  for (const villageName in supportInVillagesByPlayer) {
-    for (const playerName of playerNames) {
-      if (!supportInVillagesByPlayer[villageName][playerName]) {
-        continue;
-      }
+  report(playerNames) {
+    this.#units.data.spy.population = 0;
 
-      if (!filteredSupportInVillagesByPlayer[villageName]) {
-        filteredSupportInVillagesByPlayer[villageName] = {};
+    const urlQuery                 = this.#parseUrlSearchQuery();
+    const columnIndexesToNamesMap  = this.#mapTableColumnIndexesToNames();
+    const namesToColumnIndexesMap  = this.#mapNamesToTableColumnIndexes(columnIndexesToNamesMap);
+    this.#namesAndColumnIndexesMap = { ...columnIndexesToNamesMap, ...namesToColumnIndexesMap };
+
+    const supportInVillagesByPlayer = {};
+    const supportRows = document.querySelectorAll("#units_table tbody > tr");
+    let currentVillageName = null;
+    for (const supportRow of supportRows) {
+      if (supportRow.classList.contains("units_away")) {
+        currentVillageName = this.#getVillageName(supportRow);
       }
-      filteredSupportInVillagesByPlayer[villageName][playerName]
-        = supportInVillagesByPlayer[villageName][playerName];
+      else {
+        const playerName = this.#getPlayerName(supportRow);
+        if (!supportInVillagesByPlayer[currentVillageName]) {
+          supportInVillagesByPlayer[currentVillageName] = {};
+        }
+        if (!supportInVillagesByPlayer[currentVillageName][playerName]) {
+          supportInVillagesByPlayer[currentVillageName][playerName] = {};
+        }
+
+        this.#updateSupportUnitsOfVillageAndPlayer(
+          supportInVillagesByPlayer[currentVillageName][playerName],
+          supportRow
+        );
+      }
     }
-  }
-  console.log(filteredSupportInVillagesByPlayer);
 
-  function parseUrlSearchQuery() {
+    const filteredSupportInVillagesByPlayer = {};
+    for (const villageName in supportInVillagesByPlayer) {
+      for (const playerName of playerNames) {
+        if (!supportInVillagesByPlayer[villageName][playerName]) {
+          continue;
+        }
+
+        if (!filteredSupportInVillagesByPlayer[villageName]) {
+          filteredSupportInVillagesByPlayer[villageName] = {};
+        }
+        filteredSupportInVillagesByPlayer[villageName][playerName]
+          = supportInVillagesByPlayer[villageName][playerName];
+      }
+    }
+
+    console.log(filteredSupportInVillagesByPlayer);
+  }
+
+  #parseUrlSearchQuery() {
     const rawUrlQuery = location.search;
     const urlQuery = rawUrlQuery
       .slice(1)
@@ -67,7 +75,7 @@ import Units from "./common/Units";
       return urlQuery;
   }
 
-  function mapTableColumnIndexesToNames() {
+  #mapTableColumnIndexesToNames() {
     let map = {
       0: "villageDetails",
       1: "distance"
@@ -89,7 +97,7 @@ import Units from "./common/Units";
     return map;
   }
 
-  function mapNamesToTableColumnIndexes(columnIndexesToNamesMap) {
+  #mapNamesToTableColumnIndexes(columnIndexesToNamesMap) {
     return Object.entries(columnIndexesToNamesMap)
       .reduce((namesToColumnIndexesMap, [ index, name ]) => {
         namesToColumnIndexesMap[name] = parseInt(index);
@@ -97,9 +105,9 @@ import Units from "./common/Units";
       }, {});
   }
 
-  function getVillageName(rowElement) {
+  #getVillageName(rowElement) {
     const villageDetailsCell = rowElement
-      .children[namesAndColumnIndexesMap["villageDetails"]];
+      .children[this.#namesAndColumnIndexesMap["villageDetails"]];
     const villageLink = villageDetailsCell.querySelector("span > span > a");
     const rawVillageName = villageLink.querySelector("span").textContent.trim();
     const villageInfoSuffixIndex = rawVillageName.search(/ \(\d{3}\|\d{3}\) \w\d+$/);
@@ -107,9 +115,9 @@ import Units from "./common/Units";
     return villageName;
   }
 
-  function getPlayerName(rowElement) {
+  #getPlayerName(rowElement) {
     const villageDetailsCell = rowElement
-      .children[namesAndColumnIndexesMap["villageDetails"]];
+      .children[this.#namesAndColumnIndexesMap["villageDetails"]];
     const playerProfileLink = villageDetailsCell
       .querySelector("span[id^=label_text_] > a:first-of-type");
     if (!playerProfileLink) {
@@ -120,12 +128,12 @@ import Units from "./common/Units";
     return playerName;
   }
 
-  function updateSupportUnitsOfVillageAndPlayer(supportInVillageOfPlayer, rowElement) {
+  #updateSupportUnitsOfVillageAndPlayer(supportInVillageOfPlayer, rowElement) {
     if (!supportInVillageOfPlayer.totalPopulation)
       supportInVillageOfPlayer.totalPopulation = 0;
 
-    for (const unitName of Object.keys(units.data)) {
-      const unitsCell = rowElement.children[namesAndColumnIndexesMap[unitName]];
+    for (const unitName of Object.keys(this.#units.data)) {
+      const unitsCell = rowElement.children[this.#namesAndColumnIndexesMap[unitName]];
       if (!unitsCell) {
         // This world disabled this specific unit type.
         continue;
@@ -135,8 +143,12 @@ import Units from "./common/Units";
         supportInVillageOfPlayer[unitName] = 0;
       supportInVillageOfPlayer[unitName] += unitsCount;
       supportInVillageOfPlayer.totalPopulation
-        += unitsCount * units.data[unitName].population;
+        += unitsCount * this.#units.data[unitName].population;
     }
   }
 
+}
+
+(async function() {
+  (await new SupportManager().init()).report([ "DeSide", "Love Hate" ]);
 })();

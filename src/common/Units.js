@@ -1,4 +1,4 @@
-export class Units {
+export default class Units {
   /**
    * Defines the properties of the particular unit type.
    * @typedef {Object} UnitData

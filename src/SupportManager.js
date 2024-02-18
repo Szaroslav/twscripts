@@ -1,33 +1,10 @@
-(function () {
+import Units from "./common/Units";
 
-  const unitNames = [
-    "spear",
-    "sword",
-    "axe",
-    "archer",
-    "spy",
-    "light",
-    "marcher",
-    "heavy",
-    "ram",
-    "catapult",
-    "knight",
-    "snob"
-  ];
-  const populationPerUnit = {
-    spear:    1,
-    sword:    1,
-    axe:      1,
-    archer:   1,
-    spy:      0,
-    light:    4,
-    marcher:  5,
-    heavy:    4,
-    ram:      5,
-    catapult: 8,
-    knight:   10,
-    snob:     100
-  };
+(async function () {
+
+  const units = new Units({ cache: 86_400 });
+  await units.load();
+  units.data.spy.population = 0;
 
   const urlQuery = parseUrlSearchQuery();
   const columnIndexesToNamesMap = mapTableColumnIndexesToNames();
@@ -43,10 +20,12 @@
     }
     else {
       const playerName = getPlayerName(supportRow);
-      if (!supportInVillagesByPlayer[currentVillageName])
+      if (!supportInVillagesByPlayer[currentVillageName]) {
         supportInVillagesByPlayer[currentVillageName] = {};
-      if (!supportInVillagesByPlayer[currentVillageName][playerName])
+      }
+      if (!supportInVillagesByPlayer[currentVillageName][playerName]) {
         supportInVillagesByPlayer[currentVillageName][playerName] = {};
+      }
 
       updateSupportUnitsOfVillageAndPlayer(
         supportInVillagesByPlayer[currentVillageName][playerName],
@@ -59,12 +38,15 @@
   const playerNames = [ "Goliash77" ];
   for (const villageName in supportInVillagesByPlayer) {
     for (const playerName of playerNames) {
-      if (!supportInVillagesByPlayer[villageName][playerName])
+      if (!supportInVillagesByPlayer[villageName][playerName]) {
         continue;
+      }
 
-      if (!filteredSupportInVillagesByPlayer[villageName])
+      if (!filteredSupportInVillagesByPlayer[villageName]) {
         filteredSupportInVillagesByPlayer[villageName] = {};
-      filteredSupportInVillagesByPlayer[villageName][playerName] = supportInVillagesByPlayer[villageName][playerName];
+      }
+      filteredSupportInVillagesByPlayer[villageName][playerName]
+        = supportInVillagesByPlayer[villageName][playerName];
     }
   }
   console.log(filteredSupportInVillagesByPlayer);
@@ -91,7 +73,8 @@
       1: "distance"
     };
 
-    const tableHeaders = Array.from(document.querySelectorAll("#units_table thead > tr:nth-child(2) th"));
+    const tableHeaders = Array.from(
+      document.querySelectorAll("#units_table thead > tr:nth-child(2) th"));
     const unitImagesWithIndex = tableHeaders
       .map((header, i) => [ i, header ])
       .filter(([ _, header ]) => header.querySelector("img"))
@@ -115,7 +98,8 @@
   }
 
   function getVillageName(rowElement) {
-    const villageDetailsCell = rowElement.children[namesAndColumnIndexesMap["villageDetails"]];
+    const villageDetailsCell = rowElement
+      .children[namesAndColumnIndexesMap["villageDetails"]];
     const villageLink = villageDetailsCell.querySelector("span > span > a");
     const rawVillageName = villageLink.querySelector("span").textContent.trim();
     const villageInfoSuffixIndex = rawVillageName.search(/ \(\d{3}\|\d{3}\) \w\d+$/);
@@ -124,8 +108,10 @@
   }
 
   function getPlayerName(rowElement) {
-    const villageDetailsCell = rowElement.children[namesAndColumnIndexesMap["villageDetails"]];
-    const playerProfileLink = villageDetailsCell.querySelector("span[id^=label_text_] > a:first-of-type");
+    const villageDetailsCell = rowElement
+      .children[namesAndColumnIndexesMap["villageDetails"]];
+    const playerProfileLink = villageDetailsCell
+      .querySelector("span[id^=label_text_] > a:first-of-type");
     if (!playerProfileLink) {
       // User's support row.
       return null;
@@ -138,17 +124,18 @@
     if (!supportInVillageOfPlayer.totalPopulation)
       supportInVillageOfPlayer.totalPopulation = 0;
 
-    for (const unitName of unitNames) {
+    for (const unitName of Object.keys(units.data)) {
       const unitsCell = rowElement.children[namesAndColumnIndexesMap[unitName]];
       if (!unitsCell) {
         // This world disabled this specific unit type.
         continue;
       }
-      const unitsNumber = Number(unitsCell.textContent);
+      const unitsCount = Number(unitsCell.textContent);
       if (!supportInVillageOfPlayer[unitName])
         supportInVillageOfPlayer[unitName] = 0;
-      supportInVillageOfPlayer[unitName] += unitsNumber;
-      supportInVillageOfPlayer.totalPopulation += unitsNumber * populationPerUnit[unitName];
+      supportInVillageOfPlayer[unitName] += unitsCount;
+      supportInVillageOfPlayer.totalPopulation
+        += unitsCount * units.data[unitName].population;
     }
   }
 

@@ -1,4 +1,4 @@
-class Units {
+export class Units {
   /**
    * Defines the properties of the particular unit type.
    * @typedef {Object} UnitData
@@ -16,6 +16,16 @@ class Units {
    * @type {Object.<string, UnitData> | undefined}
    */
   data;
+  /**
+   * @type {number}
+   */
+  #cache;
+
+  constructor(options = {}) {
+   this.#cache = typeof options.cache === "number"
+      ? 1000 * options.cache
+      : 0;
+  }
 
   async fetch() {
     const url           = `${window.location.origin}/interface.php?func=get_unit_info`;
@@ -115,12 +125,27 @@ class Units {
   }
 
   save() {
-    localStorage.setItem("jsUnits:data", JSON.stringify(this.data));
+    localStorage.setItem("jsUnits:data", JSON.stringify({
+      timestamp: Date.now(),
+      ...this.data,
+    }));
   }
 
-  load() {
+  async load() {
     try {
-      this.data = JSON.parse(localStorage.getItem("jsUnits:data"));
+      const cache                        = this.#cache;
+      const { timestamp, ...storedData } = JSON.parse(
+        localStorage.getItem("jsUnits:data"));
+
+      if (Date.now() <= timestamp + cache) {
+        console.info("Load the data from local storage.");
+        this.data = storedData;
+      }
+      else {
+        console.info("Fetching and saving the data from remote configuration...");
+        await this.fetch();
+        this.save();
+      }
     }
     catch {
       // Invalid JSON, set data to undefined.

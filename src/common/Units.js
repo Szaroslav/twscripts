@@ -113,4 +113,8 @@ class Units {
     }
     return !isNaN(Number(markupValue)) ? Number(markupValue) : markupValue;
   }
+
+  save() {
+    localStorage.setItem("jsUnits:data", JSON.stringify(this.data));
+  }
 }

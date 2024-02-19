@@ -1,5 +1,5 @@
 /**
- * BarbarianWallDemolisher.js v1.2
+ * BarbarianWallDemolisher.js v1.2.1
  * Szary (Plemiona: AGH Szary) and howcio
  * GitHub:      https://github.com/Szaroslav
  * Source code: https://github.com/Szaroslav/twscripts
@@ -56,7 +56,7 @@ class BarbarianWallDemolisher {
   }
   settings = {}
 
-  version                   = "v1.2"
+  version                   = "v1.2.1"
   gameData                  = game_data ?? { screen: undefined }
   observer                  = null
   activeRow                 = null
@@ -91,7 +91,7 @@ class BarbarianWallDemolisher {
 
   initSettings(settings) {
     for (const prop in this.baseSettings) {
-      this.settings[prop] = settings[prop]
+      this.settings[prop] = settings[prop] !== undefined
                           ? settings[prop]
                           : this.baseSettings[prop];
     }

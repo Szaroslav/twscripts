@@ -53,14 +53,15 @@ class BarbarianWallDemolisher {
       19: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
       20: { "axes": 0,  "scouts": 0, "lights": 0,  "rams": 0,  "catapults": 0 },
     }
-  }
-  settings = {}
+  };
+  settings = {};
 
-  version                   = "v1.2.1"
-  gameData                  = game_data ?? { screen: undefined }
-  observer                  = null
-  activeRow                 = null
-  attackConfirmationHandler = null
+  version                   = "v1.2.1";
+  gameData                  = game_data ?? { screen: undefined };
+  observer                  = null;
+  activeRow                 = null;
+  activeConfirmAttackButton = null;
+  confirmationHandler       = null;
 
   constructor(settings = {}) {
     this.initSettings(settings);
@@ -105,15 +106,27 @@ class BarbarianWallDemolisher {
   handleDocumentChange(mutationNodeList, observer) {
     // Hide the row right after clicking the attack confirmation button.
     const confirmAttackButton = $("#troop_confirm_submit")[0];
-    if (confirmAttackButton && !this.attackConfirmationHandler) {
-      const row = this.activeRow;
-      const handleConfirmation = () => {
-        row.style.display = "none";
-        this.activeRow = null;
-      };
-      this.attackConfirmationHandler = handleConfirmation;
-      confirmAttackButton.addEventListener("click", handleConfirmation, { once: true });
+    if (confirmAttackButton && confirmAttackButton !== this.activeConfirmAttackButton) {
+      if (this.activeConfirmAttackButton) {
+        this.activeConfirmAttackButton.removeEventListener(
+          "click", this.confirmationHandler);
+      }
+
+      this.confirmationHandler = this.handleConfirmation.bind(this);
+      confirmAttackButton.addEventListener(
+        "click",
+        this.confirmationHandler,
+        { once: true });
+
+      this.activeConfirmAttackButton = confirmAttackButton;
     }
+  }
+
+  handleConfirmation(e) {
+    if (this.activeRow instanceof HTMLElement) {
+      this.activeRow.style.display = "none";
+    }
+    this.activeRow = null;
   }
 
   processPlunderRow(i, row) {

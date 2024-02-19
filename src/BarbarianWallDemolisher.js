@@ -64,7 +64,7 @@ class BarbarianWallDemolisher {
   confirmationHandler       = null;
 
   constructor(settings = {}) {
-    this.initSettings(settings);
+    this.#initSettings(settings);
   }
 
   exec() {
@@ -74,13 +74,13 @@ class BarbarianWallDemolisher {
         // Observe the DOM, whenever it changes.
         // Find the button and add onclick event handler function
         // to remove a row after sending the attack.
-        this.observer = new MutationObserver(this.handleDocumentChange.bind(this));
+        this.observer = new MutationObserver(this.#handleDocumentChange.bind(this));
         this.observer.observe(document.body, { childList: true, subtree: true });
       }
 
       const plunderList = $("#plunder_list")[0].rows;
       for (let i = 0; i < plunderList.length; i++) {
-        this.processPlunderRow(i, plunderList[i]);
+        this.#processPlunderRow(i, plunderList[i]);
       }
     }
     else {
@@ -90,7 +90,7 @@ class BarbarianWallDemolisher {
     }
   }
 
-  initSettings(settings) {
+  #initSettings(settings) {
     for (const prop in this.baseSettings) {
       this.settings[prop] = settings[prop] !== undefined
                           ? settings[prop]
@@ -103,7 +103,7 @@ class BarbarianWallDemolisher {
     }
   }
 
-  handleDocumentChange(mutationNodeList, observer) {
+  #handleDocumentChange(mutationNodeList, observer) {
     // Hide the row right after clicking the attack confirmation button.
     const confirmAttackButton = $("#troop_confirm_submit")[0];
     if (confirmAttackButton && confirmAttackButton !== this.activeConfirmAttackButton) {
@@ -112,7 +112,7 @@ class BarbarianWallDemolisher {
           "click", this.confirmationHandler);
       }
 
-      this.confirmationHandler = this.handleConfirmation.bind(this);
+      this.confirmationHandler = this.#handleConfirmation.bind(this);
       confirmAttackButton.addEventListener(
         "click",
         this.confirmationHandler,
@@ -122,14 +122,14 @@ class BarbarianWallDemolisher {
     }
   }
 
-  handleConfirmation(e) {
+  #handleConfirmation() {
     if (this.activeRow instanceof HTMLElement) {
       this.activeRow.style.display = "none";
     }
     this.activeRow = null;
   }
 
-  processPlunderRow(i, row) {
+  #processPlunderRow(i, row) {
     if (i < 2) {
       return;
     }
@@ -153,7 +153,7 @@ class BarbarianWallDemolisher {
     const needToScan = this.settings.scanIfNoInformation && (isYellow || isRed);
 
     if (wallLevel > 0 || needToScan) {
-      this.addHandlerToCommandButton(row, wallLevel, needToScan);
+      this.#addHandlerToCommandButton(row, wallLevel, needToScan);
     }
     else {
       if (this.settings.hideOthers) {
@@ -162,7 +162,7 @@ class BarbarianWallDemolisher {
     }
   }
 
-  addHandlerToCommandButton(row, wallLevel, needToScan) {
+  #addHandlerToCommandButton(row, wallLevel, needToScan) {
     const sendManuallyCommandCell = row.cells[row.cells.length - 1];
     const target = sendManuallyCommandCell.getElementsByTagName("a")[0].href.split("target=")[1];
     const commonCommandParameters = {
@@ -190,10 +190,12 @@ class BarbarianWallDemolisher {
     const commandButton   = sendManuallyCommandCell.getElementsByTagName("a")[0];
     commandButton.removeAttribute("onclick");
     commandButton.href   += `&${$.param(unitsCommandParameters)}`;
-    commandButton.onclick = this.handleCommandClick.bind(this, commandParameters, row);
+    commandButton.addEventListener(
+      "click",
+      this.#handleCommandClick.bind(this, commandParameters, row));
   }
 
-  handleCommandClick(parameters, row, event) {
+  #handleCommandClick(parameters, row, event) {
     if (!event.ctrlKey && !event.shiftKey) {
       // Disable redirection and render the command popup.
       event.preventDefault();

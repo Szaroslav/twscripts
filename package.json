@@ -2,10 +2,13 @@
   "type": "module",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w --dev"
+    "dev": "rollup -c -w --dev",
+    "lint": "eslint src config"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.3",
+    "@stylistic/eslint-plugin": "^1.6.2",
+    "eslint": "^8.57.0",
     "rollup": "^3.29.1",
     "rollup-plugin-ascii": "^0.0.3",
     "rollup-plugin-banner": "^0.2.1",

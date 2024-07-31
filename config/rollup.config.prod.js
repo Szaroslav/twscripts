@@ -1,9 +1,8 @@
 import { readFileSync } from "node:fs";
 import { defineConfig } from "rollup";
 import terser from "@rollup/plugin-terser";
-import banner_ from "rollup-plugin-banner";
+import banner from "rollup-plugin-banner2";
 
-const banner = banner_.default;
 const bannerCommentRegExp = /^\/\*\*.*?\*\//s;
 
 const bannerComment = path => {
@@ -28,6 +27,8 @@ export default filename => defineConfig({
         ascii_only: true,
       }
     }),
-    banner(bannerComment(`./src/${filename}`)),
+    banner(() => bannerComment(`./src/${filename}`), {
+      formatter: "docBlockAndGap",
+    }),
   ],
 });

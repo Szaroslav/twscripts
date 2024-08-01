@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.3",
-    "@stylistic/eslint-plugin": "^1.6.2",
+    "@stylistic/eslint-plugin": "^2.6.1",
     "eslint": "^8.57.0",
     "rollup": "^3.29.1",
     "rollup-plugin-ascii": "^0.0.3",

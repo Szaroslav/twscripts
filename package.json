@@ -6,7 +6,7 @@
     "lint": "eslint src config"
   },
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "@stylistic/eslint-plugin": "^2.6.1",
     "eslint": "^8.57.0",
     "rollup": "^3.29.5",

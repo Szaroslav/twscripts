@@ -20,7 +20,7 @@ function TWUIBuilder() {
 
   t.build = function () {
     return rootContainer;
-  }
+  };
 
   t.header = function (title = undefined) {
     if (title) {
@@ -32,7 +32,7 @@ function TWUIBuilder() {
 
     delete t.header;
     return t;
-  }
+  };
 
   return t;
 }

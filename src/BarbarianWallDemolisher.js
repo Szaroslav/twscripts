@@ -103,7 +103,7 @@ class BarbarianWallDemolisher {
     }
   }
 
-  #handleDocumentChange(mutationNodeList, observer) {
+  #handleDocumentChange() {
     // Hide the row right after clicking the attack confirmation button.
     const confirmAttackButton = $("#troop_confirm_submit")[0];
     if (confirmAttackButton && confirmAttackButton !== this.activeConfirmAttackButton) {

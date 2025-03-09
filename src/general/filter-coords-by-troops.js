@@ -98,7 +98,7 @@ function areCoordsInBoundaries(coords) {
 }
 
 function parseRow(row) {
-  const rowSplit = row.split(',');
+  const rowSplit = row.split(",");
   if (rowSplit.length < columns.length) {
     throw new Error("Invalid number of columns.");
   }

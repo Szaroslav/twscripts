@@ -20,12 +20,12 @@ import GreyMemo from "./common/Memo.js";
 
 class ScheduleMerger {
 
-    MSG_DURATION = 1400
-    memo         = null
+    MSG_DURATION = 1400;
+    memo         = null;
     baseSettings = {
-        scheduleFormat: 'extendedText',
-    }
-    settings = {}
+        scheduleFormat: "extendedText",
+    };
+    settings = {};
 
     constructor(settings = {}) {
         this.settings.scheduleFormat = settings.scheduleFormat
@@ -34,39 +34,39 @@ class ScheduleMerger {
 
     exec() {
         console.log(
-            '%cScheduleMerger.js %cv0.9.2',
-            'display: inline-block; padding: 4px 0',
-            'display: inline-block; padding: 4px; background-color: #2151ae; color: white');
+            "%cScheduleMerger.js %cv0.9.2",
+            "display: inline-block; padding: 4px 0",
+            "display: inline-block; padding: 4px; background-color: #2151ae; color: white");
         console.log(
-            'Skrypt stworzony przez %cSzary %c(Plemiona: %cAGH Szary%c)',
-            'font-weight: bold',
-            'font-weight: normal',
-            'font-weight: bold',
-            'font-weight: normal');
+            "Skrypt stworzony przez %cSzary %c(Plemiona: %cAGH Szary%c)",
+            "font-weight: bold",
+            "font-weight: normal",
+            "font-weight: bold",
+            "font-weight: normal");
 
-        if (typeof Memo !== 'undefined') {
+        if (typeof Memo !== "undefined") {
             this.memo = new GreyMemo(Memo);
             this.MSG_DURATION = this.memo.msgDurationMs;
             const schedule = this.getSchedule();
             this.memo.create(schedule);
         }
         else {
-            UI.ErrorMessage('Nie jesteś w notatkach. Przenoszę.');
+            UI.ErrorMessage("Nie jesteś w notatkach. Przenoszę.");
             setTimeout(() => location.href = `${location.origin}/game.php?screen=memo`, this.MSG_DURATION + 600);
         }
     }
 
     getSchedule() {
         const schedule = [];
-        const memoElements = document.querySelectorAll('.memo_container');
+        const memoElements = document.querySelectorAll(".memo_container");
 
         memoElements.forEach(memoElement => {
-            const filteredSchedule = this.filterSchedule(memoElement.querySelector('textarea[name="memo"]').value)
-                .map(line => line + '\r\n');
+            const filteredSchedule = this.filterSchedule(memoElement.querySelector("textarea[name=\"memo\"]").value)
+                .map(line => line + "\r\n");
 
             let step = 4;
-            const scheduleFormat = this.settings.scheduleFormat
-            if (scheduleFormat === 'oldExtendedText' || scheduleFormat === 'basicText') {
+            const scheduleFormat = this.settings.scheduleFormat;
+            if (scheduleFormat === "oldExtendedText" || scheduleFormat === "basicText") {
                 step = 3;
             }
 
@@ -81,33 +81,33 @@ class ScheduleMerger {
             const dateB = new Date(`${b[1].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)}T${b[1].match(/[0-9]{2}:[0-9]{2}:[0-9]{2}/)}`);
             return dateA - dateB;
         });
-        schedule.forEach((order, i) => order[0] = order[0].replace(/^[0-9]{1,}\./, `${i + 1}.`))
+        schedule.forEach((order, i) => order[0] = order[0].replace(/^[0-9]{1,}\./, `${i + 1}.`));
 
         return schedule;
     }
 
     filterSchedule(scheduleText) {
         switch (this.settings.scheduleFormat) {
-            case 'extendedText':
-            case 'sittersText': {
+            case "extendedText":
+            case "sittersText": {
                 return scheduleText
-                    .split('\n')
-                    .filter(line => line !== '')
+                    .split("\n")
+                    .filter(line => line !== "")
                     .filter(line => /^[0-9]+\./.test(line)
                         || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
                         || /^[0-9]{3}\|[0-9]{3}.*?[0-9]{3}\|[0-9]{3}$/.test(line)
                         || /^\[url=.*?\]Wyślij.*?\[\/url\]$/.test(line));
             }
-            case 'basicText':
-            case 'oldExtendedText': {
+            case "basicText":
+            case "oldExtendedText": {
                 return scheduleText
-                    .split('\n')
-                    .filter(line => line !== '')
+                    .split("\n")
+                    .filter(line => line !== "")
                     .filter(line => /^[0-9]+\./.test(line)
                         || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
                         || /Wyślij \w+\[\/url]$/.test(line));
             }
-            case 'table': {
+            case "table": {
                 // TODO
             }
         }

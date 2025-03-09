@@ -5,7 +5,7 @@
  */
 
 function Memo(external) {
-    this.maxMemoSize   = typeof char_limit === 'number' ? char_limit : 6e4;
+    this.maxMemoSize   = typeof char_limit === "number" ? char_limit : 6e4;
     this.msgDurationMs = 1400;
 
     this.external       = external;
@@ -17,10 +17,10 @@ function Memo(external) {
         const contents = this.splitSchedule(schedule);
 
         if (contents === null) {
-            UI.ErrorMessage('Nie udało się utworzyć rozpiski.', this.msgDurationMs);
+            UI.ErrorMessage("Nie udało się utworzyć rozpiski.", this.msgDurationMs);
             return;
         }
-        UI.SuccessMessage('Tworzę rozpiskę, może to zająć kilka sekund.', this.msgDurationMs);
+        UI.SuccessMessage("Tworzę rozpiskę, może to zająć kilka sekund.", this.msgDurationMs);
 
         const noAlreadyExistingMemos = this.tabs.length;
 
@@ -32,22 +32,22 @@ function Memo(external) {
 
         this.external.selectTab(this.tabs[noAlreadyExistingMemos].id);
         UI.SuccessMessage(
-            'Rozpiska została utworzona. Odświeżam stronę.', this.msgDurationMs);
+            "Rozpiska została utworzona. Odświeżam stronę.", this.msgDurationMs);
         setTimeout(() => location.reload(), this.msgDurationMs + 600);
     };
 
     this.getSchedule = function (scheduleText, format) {
-        if (format === 'text') {
+        if (format === "text") {
             return scheduleText
-                .split('\n')
-                .filter(line => line !== '')
+                .split("\n")
+                .filter(line => line !== "")
                 .filter(line => /^[0-9]+./.test(line)
                     || /^\[b\][0-9]{4}-[0-9]{2}-[0-9]{2}/.test(line)
                     || /Wyślij \w+\[\/url]$/.test(line))
-                .map(line => line + '\r\n');
+                .map(line => line + "\r\n");
         }
-        else if (format === 'table') {
-
+        else if (format === "table") {
+          // TODO
         }
     };
 
@@ -57,35 +57,35 @@ function Memo(external) {
                 return;
             }
             if (this.tabs.push(response) >= this.maxNoTabs) {
-                $('#memo-add-tab-button').hide();
+                $("#memo-add-tab-button").hide();
             }
-            if ($('div.memo-tab').length === 0) {
+            if ($("div.memo-tab").length === 0) {
                 location.reload();
                 return;
             }
 
-            const memoTab = $('div.memo-tab').first().clone();
+            const memoTab = $("div.memo-tab").first().clone();
             this.external.editTabElement(memoTab, response.id, response.title, true);
-            memoTab.appendTo($('#tab-bar'));
-            $('.memo-tab-button-close').show();
+            memoTab.appendTo($("#tab-bar"));
+            $(".memo-tab-button-close").show();
 
-            const memoContainer = $('div.memo_container').first().clone(),
-                  memoId        = memoContainer.attr('id').substr(5);
+            const memoContainer = $("div.memo_container").first().clone(),
+                  memoId        = memoContainer.attr("id").substr(5);
 
-            memoContainer.attr('id', 'memo_' + response.id);
-            $('input[name="tab_id"]', memoContainer).val(response.id);
-            $('tr.show_row > td', memoContainer).empty();
-            $('textarea', memoContainer)
-                .val('')
+            memoContainer.attr("id", "memo_" + response.id);
+            $("input[name=\"tab_id\"]", memoContainer).val(response.id);
+            $("tr.show_row > td", memoContainer).empty();
+            $("textarea", memoContainer)
+                .val("")
                 .last()
-                .attr('id', 'message_' + response.id);
-            $('tr.bbcodes > td', memoContainer).empty();
-            memoContainer.insertAfter($('div.memo_container').last());
+                .attr("id", "message_" + response.id);
+            $("tr.bbcodes > td", memoContainer).empty();
+            memoContainer.insertAfter($("div.memo_container").last());
 
             if (this.external.Memory.toggle[memoId]) {
                 const selectorOfMemoElements
-                    = '.show_row, .edit_link, .edit_row, .submit_row, .bbcodes';
-                $(selectorOfMemoElements, $('#memo_' + response.id)).toggle();
+                    = ".show_row, .edit_link, .edit_row, .submit_row, .bbcodes";
+                $(selectorOfMemoElements, $("#memo_" + response.id)).toggle();
             }
 
             this.external.selectTab(response.id);
@@ -99,15 +99,15 @@ function Memo(external) {
 
             if (this.tabs.length >= this.maxNoTabs) {
                 UI.ErrorMessage(s(
-                    _('3531dec6f954a7d15f46b4cf644c5bfe'),
+                    _("3531dec6f954a7d15f46b4cf644c5bfe"),
                     this.tabs.length
                 ));
                 deferred.reject();
             }
 
             TribalWars.post(
-                'memo',
-                { ajaxaction: 'add_tab' },
+                "memo",
+                { ajaxaction: "add_tab" },
                 {},
                 response => handleResponse(response, deferred)
             );
@@ -126,12 +126,12 @@ function Memo(external) {
                 this.tabs[external.findTab(tabId)].title = title;
                 external.selectTab(tabId);
             }
-        }).bind(this)
+        }).bind(this);
 
         return $.ajax({
-            url:      $('#rename_tab_url').val(),
-            type:     'POST',
-            dataType: 'json',
+            url:      $("#rename_tab_url").val(),
+            type:     "POST",
+            dataType: "json",
             data: {
                 id:       tabId,
                 newTitle: title
@@ -152,11 +152,11 @@ function Memo(external) {
             h:      form.elements.h.value
         };
 
-        return $.ajax(requestUrl, { method: 'POST', data: requestData })
+        return $.ajax(requestUrl, { method: "POST", data: requestData })
             .then(((_, status) => {
-                if (status !== 'success') {
+                if (status !== "success") {
                     UI.ErrorMessage(
-                        'Nie udało się utworzyć rozpiski.', this.msgDurationMs);
+                        "Nie udało się utworzyć rozpiski.", this.msgDurationMs);
                     throw new Error();
                 }
             }).bind(this));
@@ -168,20 +168,20 @@ function Memo(external) {
             return null;
 
         const newSchedule = [];
-        const newLine = '\r\n';
-        let memoText = '';
+        const newLine = "\r\n";
+        let memoText = "";
 
         schedule.forEach(order => {
-            const orderText = order.join('');
+            const orderText = order.join("");
             if (memoText.length + orderText.length + newLine.length > this.maxMemoSize) {
                 newSchedule.push(memoText);
-                memoText = '';
+                memoText = "";
             }
 
-            if (memoText !== '') memoText += newLine;
+            if (memoText !== "") memoText += newLine;
             memoText += orderText;
         });
-        if (memoText !== '') newSchedule.push(memoText);
+        if (memoText !== "") newSchedule.push(memoText);
 
         return newSchedule;
     };

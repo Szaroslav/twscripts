@@ -13,7 +13,6 @@ class SupportManager {
   report(playerNames) {
     this.#units.data.spy.population = 0;
 
-    const urlQuery                 = this.#parseUrlSearchQuery();
     const columnIndexesToNamesMap  = this.#mapTableColumnIndexesToNames();
     const namesToColumnIndexesMap  = this.#mapNamesToTableColumnIndexes(columnIndexesToNamesMap);
     this.#namesAndColumnIndexesMap = { ...columnIndexesToNamesMap, ...namesToColumnIndexesMap };
@@ -59,21 +58,21 @@ class SupportManager {
     console.log(filteredSupportInVillagesByPlayer);
   }
 
-  #parseUrlSearchQuery() {
-    const rawUrlQuery = location.search;
-    const urlQuery = rawUrlQuery
-      .slice(1)
-      .split("&")
-      .reduce((urlParamsObject, currentRawParam) => {
-        const [ key, value ] = currentRawParam
-          .split("=")
-          .map(v => decodeURIComponent(v));
-        urlParamsObject[key] = value;
-        return urlParamsObject;
-      }, {});
+  // #parseUrlSearchQuery() {
+  //   const rawUrlQuery = location.search;
+  //   const urlQuery = rawUrlQuery
+  //     .slice(1)
+  //     .split("&")
+  //     .reduce((urlParamsObject, currentRawParam) => {
+  //       const [ key, value ] = currentRawParam
+  //         .split("=")
+  //         .map(v => decodeURIComponent(v));
+  //       urlParamsObject[key] = value;
+  //       return urlParamsObject;
+  //     }, {});
 
-      return urlQuery;
-  }
+  //     return urlQuery;
+  // }
 
   #mapTableColumnIndexesToNames() {
     let map = {

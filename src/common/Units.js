@@ -131,7 +131,7 @@ export default class Units {
   #getMarkupName(markup, mode = "any") {
     let markupRegex = /<\/?(.*?)>/;
     if (mode === "opening") {
-      markupRegex = /<([^\/].*?)>/;
+      markupRegex = /<([^/].*?)>/;
     }
     else if (mode === "closing") {
       markupRegex = /<\/(.*?)>/;

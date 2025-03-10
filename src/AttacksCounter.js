@@ -87,11 +87,6 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
     }
   }
 
-  // Function to introduce a pause
-  function pause(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   // Function to download a file
   function downloadFile(filename, content) {
     const element = document.createElement("a");
@@ -138,7 +133,7 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
 
       // Fetching attack nicknames for each village with pause
       const combinedData = {};
-      UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane graczy</b>. <br />Czekaj!")
+      UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane graczy</b>. <br />Czekaj!");
       for (const coord in villageData) {
         const id = villageData[coord];
         // await pause(200); // Introduce a 200ms pause before each request
@@ -151,7 +146,6 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
           }
         }
         const villageCount = Object.keys(combinedData).length;
-        const totalVillages = Object.keys(villageData).length;
         UI.InfoMessage(`Zebrano dane z ${villageCount} wiosek`);
       }
 
@@ -169,7 +163,7 @@ function fetchCommandsPerPlayer(inputData, minPopulation, maxPopulation) {
 
       // Generate CSV from individual village data
       let villageCsv = "Koordy,Nazwa gracza,Liczba ataków (suma)\n";
-      UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane z wiosek</b>. <br />Czekaj!")
+      UI.Notification.show("https://help.plemiona.pl/images/2/26/Star.PNG", "Zbieranie ataków", "Zbieranie ataków - <b>dane z wiosek</b>. <br />Czekaj!");
       for (const coord in villageData) {
         const id = villageData[coord];
         // await pause(200); // Introduce a 200ms pause before each request
@@ -224,7 +218,7 @@ function main() {
           minPopulation      = minPopulationValue !== "" ? Number(minPopulationValue) : 0,
           maxPopulation      = maxPopulationValue !== "" ? Number(maxPopulationValue) : Infinity;
     fetchCommandsPerPlayer(inputCoords, minPopulation, maxPopulation);
-  }
+  };
 }
 
 main();

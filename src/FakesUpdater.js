@@ -1,27 +1,27 @@
 (async function() {
 
-const modal = $('#check_villages');
+const modal = $("#check_villages");
 
 const cvData = {
-  mobileContent:       '#mobileContent',
-  desktopContent:      '#contentContainer',
-  checkVillagesForm:   '.check-villages--form',
-  villagesCoordsInput: '.villages-coords--input',
-  maxAttacksInput:     '.max-attacks--input',
-  tribeIdsInput:       '.tribe-ids--input',
-  villagesOutputDiv:   '.villages-output--div',
-  removedVillagesDiv:  '.removed-villages--div',
-  counter:             '.counter',
-  commandRow:          'tr.command-row',
-  dataCommandType:     'command-type'
+  mobileContent:       "#mobileContent",
+  desktopContent:      "#contentContainer",
+  checkVillagesForm:   ".check-villages--form",
+  villagesCoordsInput: ".villages-coords--input",
+  maxAttacksInput:     ".max-attacks--input",
+  tribeIdsInput:       ".tribe-ids--input",
+  villagesOutputDiv:   ".villages-output--div",
+  removedVillagesDiv:  ".removed-villages--div",
+  counter:             ".counter",
+  commandRow:          "tr.command-row",
+  dataCommandType:     "command-type"
 };
 
-const BARBARIANS_ID = '0';
+const BARBARIANS_ID = "0";
 
 const fetchRemoteData = async function (url, objectSchema) {
   const response = await fetch(url);
   const responseData = await response.text();
-  const data = responseData.split('\n').map(line => line.split(','));
+  const data = responseData.split("\n").map(line => line.split(","));
 
   if (data.length === 0) {
     return null;
@@ -37,7 +37,7 @@ const fetchRemoteData = async function (url, objectSchema) {
     for (let i = 0; i < schemaKeys.length; i++) {
       const key = schemaKeys[i];
       lineObject[key] = line[i];
-      if (schemaKeys[key] === 'number') {
+      if (schemaKeys[key] === "number") {
         lineObject[key] = Number(lineObject[key]);
       }
     }
@@ -45,7 +45,7 @@ const fetchRemoteData = async function (url, objectSchema) {
   }
 
   return objectsData;
-}
+};
 
 const arrayToMap = function (array, key) {
   if (array.length === 0 && !array[0][key]) {
@@ -53,39 +53,39 @@ const arrayToMap = function (array, key) {
   }
 
   return array.reduce((accumulator, currentValue) => {
-    accumulator[currentValue[key]] = currentValue
+    accumulator[currentValue[key]] = currentValue;
     return accumulator;
   }, {});
-}
+};
 
-const villagesData = arrayToMap(await fetchRemoteData('/map/village.txt', {
-  id:       'string',
-  name:     'string',
-  x:        'number',
-  y:        'number',
-  playerId: 'string',
-  points:   'number',
-  rank:     'number'
-}), 'id');
-const playersData = arrayToMap(await fetchRemoteData('/map/player.txt', {
-  id:       'string',
-  name:     'string',
-  tribeId:  'string',
-  villages: 'number',
-  points:   'number',
-  rank:     'number'
-}), 'id');
+const villagesData = arrayToMap(await fetchRemoteData("/map/village.txt", {
+  id:       "string",
+  name:     "string",
+  x:        "number",
+  y:        "number",
+  playerId: "string",
+  points:   "number",
+  rank:     "number"
+}), "id");
+const playersData = arrayToMap(await fetchRemoteData("/map/player.txt", {
+  id:       "string",
+  name:     "string",
+  tribeId:  "string",
+  villages: "number",
+  points:   "number",
+  rank:     "number"
+}), "id");
 
 const checkVillages = function(event) {
   event.preventDefault();
 
   const targetElement = $(event.target);
 
-  const villagesCoords = targetElement.find(cvData.villagesCoordsInput).val().split(' ');
-  const tribeIds = [ BARBARIANS_ID, ...targetElement.find(cvData.tribeIdsInput).val().replace(' ', '').split(',') ];
+  const villagesCoords = targetElement.find(cvData.villagesCoordsInput).val().split(" ");
+  const tribeIds = [ BARBARIANS_ID, ...targetElement.find(cvData.tribeIdsInput).val().replace(" ", "").split(",") ];
 
   let maxAttacks = targetElement.find(cvData.maxAttacksInput).val();
-  if (maxAttacks === '') {
+  if (maxAttacks === "") {
     maxAttacks = Number.MAX_SAFE_INTEGER;
   }
   else if (maxAttacks < 1) {
@@ -93,22 +93,18 @@ const checkVillages = function(event) {
   }
 
   const villages = {};
-  const incomings = {};
-  const attacksPerVillage = {};
-  const outputVillages = {};
+  // const incomings = {};
+  // const attacksPerVillage = {};
+  // const outputVillages = {};
 
   const villageCoordsUnique = [...new Set(villagesCoords)];
 
-  
-  villageCoordsUnique.forEach((item, _) => {
+  villageCoordsUnique.forEach((item) => {
     const village = getVillageData(item);
     if (null !== village) {
       villages[village.id] = village;
     }
   });
-  
-  const allVillages = Object.keys(villages).length;
-  // displayCounter(0, allVillages);
 
   // Remove all villages, which tribe ID contains in tribe IDs input.
   const villagesToRemove = Object.entries(villages)
@@ -152,7 +148,7 @@ const checkVillages = function(event) {
   displayRemovedVillages(removedVillages, removedVillagesNumber);
 
   return false;
-}
+};
 
 const openModal = function () {
   const modalHtml = `
@@ -186,11 +182,11 @@ const openModal = function () {
   `;
 
   $(mobile ? cvData.mobileContent : cvData.desktopContent).prepend(modalHtml);
-  $('#check_villages').find(cvData.checkVillagesForm).on('submit', checkVillages);
-}
+  $("#check_villages").find(cvData.checkVillagesForm).on("submit", checkVillages);
+};
 
 const getVillageData = function(coordsStr) {
-  const coords = coordsStr.split('|'),
+  const coords = coordsStr.split("|"),
         x      = coords[0],
         y      = coords[1];
 
@@ -200,67 +196,67 @@ const getVillageData = function(coordsStr) {
   }
 
   const playerId = villagesData[village.id].playerId;
-  const tribeId = playerId !== '0' ? playersData[playerId].tribeId : '0';
+  const tribeId = playerId !== "0" ? playersData[playerId].tribeId : "0";
   village.tribeId = tribeId;
 
-  console.log('Sprawdziłem wioskę o koordach ' + coordsStr);
+  console.log("Sprawdziłem wioskę o koordach " + coordsStr);
 
   return village;
-}
+};
 
-const getVillageAttacks = function(id) {
-  let data;
+// const getVillageAttacks = function(id) {
+//   let data;
 
-  $.ajax({
-    async: false,
-    url: '/game.php?village='+game_data.village.id+'&screen=map&ajax=map_info&source='+game_data.village.id+'&target='+id,
-    dataType: 'json',
-    success: function(d) { data = d.incoming_html;},
-    timeout: 500
-  });
+//   $.ajax({
+//     async: false,
+//     url: "/game.php?village="+game_data.village.id+"&screen=map&ajax=map_info&source="+game_data.village.id+"&target="+id,
+//     dataType: "json",
+//     success: function(d) { data = d.incoming_html;},
+//     timeout: 500
+//   });
 
-  console.log('Sprawdziłem ataki na ' + id);
+//   console.log("Sprawdziłem ataki na " + id);
 
-  return data;
-}
+//   return data;
+// };
 
-const displayCounter = function(temp, all) {
-  if(temp < 1 && all < 1) {
-    $(cvData.counter).html('Poczekaj chwilę, ładuję wioski.');
-  }
+// const displayCounter = function(temp, all) {
+//   if(temp < 1 && all < 1) {
+//     $(cvData.counter).html("Poczekaj chwilę, ładuję wioski.");
+//   }
 
-  if(temp<all) {
-    $(cvData.counter).html('Poczekaj chwilę, sprawdziłem '+temp+'/'+all+' wiosek.');
-  } else {
-    $(cvData.counter).html('Sprawdziłem '+temp+'/'+all+'.');
-  }
-}
+//   if(temp<all) {
+//     $(cvData.counter).html("Poczekaj chwilę, sprawdziłem "+temp+"/"+all+" wiosek.");
+//   } else {
+//     $(cvData.counter).html("Sprawdziłem "+temp+"/"+all+".");
+//   }
+// };
 
 const displayOutputVillages = function(outputVillages) {
-  let outputStr = '<textarea style="width: 100%">';
+  let outputStr = "<textarea style=\"width: 100%\">";
   for (const village of Object.values(outputVillages)) {
-    outputStr += village.x +'|' + village.y + ' ';
+    outputStr += village.x +"|" + village.y + " ";
   }
-  outputStr += '</textarea>';
+  outputStr += "</textarea>";
 
   $(cvData.villagesOutputDiv).html(outputStr);
-}
+};
 
 const displayRemovedVillages = function (removedVillages, number) {
-  let outputStr = '<textarea style="width: 100%">';
+  let outputStr = "<textarea style=\"width: 100%\">";
   for (const village of Object.values(removedVillages)) {
-    outputStr  += village.x +'|' + village.y + ' ';
+    outputStr  += village.x +"|" + village.y + " ";
   }
-  outputStr    += '</textarea>';
+  outputStr    += "</textarea>";
 
-  outputStr    += '<p style="margin: 0; padding: .5rem">Usunięto <b>' + number + '</b> wiosek.</p>';
+  outputStr    += "<p style=\"margin: 0; padding: .5rem\">Usunięto <b>" + number + "</b> wiosek.</p>";
 
   $(cvData.removedVillagesDiv).html(outputStr);
-}
+};
 
 const closeModal = function() {
   $(modal).remove();
-}
+};
 
 if (modal.length) {
   closeModal();

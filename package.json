@@ -18,7 +18,7 @@
     "rollup-plugin-strip-code": "^0.2.8"
   },
   "dependencies": {
-    "glob": "^11.0.3",
+    "glob": "^11.1.0",
     "lodash": "^4.17.21",
     "mri": "^1.2.0"
   }
